@@ -1,0 +1,81 @@
+// apps/api/prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// --- ENUMS ---
+enum TransactionType {
+  IMPORT
+  EXPORT
+}
+
+// --- MODELS ---
+
+model Category {
+  id          String   @id @default(uuid())
+  name        String   @unique // e.g., "Engine", "Brakes", "Plastics"
+  description String?
+  parts       Part[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Vehicle {
+  id          String   @id @default(uuid())
+  modelName   String   // e.g., "Air Blade", "Wave Alpha"
+  year        Int      // e.g., 2022
+  engineSize  String?  // e.g., "125cc", "110cc"
+  
+  // Implicit Many-to-Many relation with Part
+  parts       Part[]   
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Ensures we don't have duplicate vehicle profiles
+  @@unique([modelName, year, engineSize])
+}
+
+model Part {
+  id            String   @id @default(uuid())
+  partNumber    String   @unique // Official Honda Part Number (SKU)
+  name          String   // e.g., "Spark Plug CPR9EA-9"
+  description   String?
+  price         Decimal  @db.Decimal(10, 2)
+  stockQuantity Int      @default(0)
+  minStockLevel Int      @default(5) // Threshold for low-stock alerts
+  barcode       String?  @unique     // For quick scanning at the counter
+
+  // One-to-Many relation: A category has many parts
+  categoryId    String
+  category      Category @relation(fields: [categoryId], references: [id])
+
+  // Many-to-Many relation: A part fits many vehicles, a vehicle has many parts
+  vehicles      Vehicle[] 
+  
+  // One-to-Many relation: A part has many inventory transactions
+  transactions  InventoryTransaction[]
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model InventoryTransaction {
+  id            String          @id @default(uuid())
+  type          TransactionType
+  quantity      Int             // e.g., 50 (Import) or 2 (Export)
+  notes         String?         // e.g., "Restock from Honda VN", "Retail sale"
+
+  // Relation to Part
+  partId        String
+  part          Part            @relation(fields: [partId], references: [id])
+
+  // Acts as a ledger, so we only need to know when it happened
+  createdAt     DateTime        @default(now()) 
+}
