@@ -1,0 +1,54 @@
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service';
+import { CreatePartDto } from './dto/create-part.dto';
+import { UpdatePartDto } from './dto/update-part.dto';
+
+@Injectable()
+export class PartsService {
+  constructor(private prisma: PrismaService) {}
+
+  create(createPartDto: CreatePartDto) {
+    return this.prisma.part.create({
+      data: createPartDto,
+    });
+  }
+
+  findAll(categoryId?: string, query?: string) {
+    return this.prisma.part.findMany({
+      where: {
+        ...(categoryId && { categoryId }),
+        ...(query && {
+          OR: [
+            { name: { contains: query, mode: 'insensitive' } },
+            { partNumber: { contains: query, mode: 'insensitive' } },
+          ],
+        }),
+      },
+      include: {
+        category: true,
+      },
+    });
+  }
+
+  async findOne(id: string) {
+    const part = await this.prisma.part.findUnique({
+      where: { id },
+      include: { category: true, vehicles: true },
+    });
+    if (!part) throw new NotFoundException('Part not found');
+    return part;
+  }
+
+  update(id: string, updatePartDto: UpdatePartDto) {
+    return this.prisma.part.update({
+      where: { id },
+      data: updatePartDto,
+    });
+  }
+
+  remove(id: string) {
+    return this.prisma.part.delete({
+      where: { id },
+    });
+  }
+}

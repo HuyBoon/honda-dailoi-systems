@@ -1,5 +1,3 @@
-// apps/api/prisma/schema.prisma
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -24,6 +22,8 @@ model Category {
   
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  @@index([name])
 }
 
 model Vehicle {
@@ -40,6 +40,7 @@ model Vehicle {
 
   // Ensures we don't have duplicate vehicle profiles
   @@unique([modelName, year, engineSize])
+  @@index([modelName, year])
 }
 
 model Part {
@@ -64,6 +65,9 @@ model Part {
 
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+
+  @@index([partNumber])
+  @@index([name])
 }
 
 model InventoryTransaction {
