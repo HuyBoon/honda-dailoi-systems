@@ -1,0 +1,24 @@
+# Node_modules (Bỏ qua của tất cả các project con)
+node_modules/
+*/node_modules/
+*/*/node_modules/
+
+# Môi trường (Environment variables)
+.env
+.env.local
+.env.*.local
+
+# Các thư mục Build & Logs
+dist/
+build/
+.next/
+logs/
+*.log
+
+# Docker Database (Rất quan trọng, không được push data thật lên Git)
+postgres_data/
+
+# OS/Editor Files
+.DS_Store
+.vscode/
+.idea/
