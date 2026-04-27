@@ -9,6 +9,7 @@ import { PartsModule } from '@/modules/parts/parts.module';
 import { VehiclesModule } from '@/modules/vehicles/vehicles.module';
 import { UsersModule } from '@/modules/users/users.module';
 import { AuthModule } from '@/modules/auth/auth.module';
+import { HealthModule } from '@/modules/health/health.module';
 import configuration from '@/config/configuration';
 
 @Module({
@@ -23,6 +24,7 @@ import configuration from '@/config/configuration';
     VehiclesModule,
     UsersModule,
     AuthModule,
+    HealthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
