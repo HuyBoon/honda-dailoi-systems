@@ -1,14 +1,29 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
-import { CategoriesModule } from './categories/categories.module';
-import { PrismaModule } from './prisma/prisma.module';
-import { PartsModule } from './parts/parts.module';
-import { VehiclesModule } from './vehicles/vehicles.module';
+import { CategoriesModule } from '@/modules/categories/categories.module';
+import { PrismaModule } from '@/database/prisma/prisma.module';
+import { PartsModule } from '@/modules/parts/parts.module';
+import { VehiclesModule } from '@/modules/vehicles/vehicles.module';
+import { UsersModule } from '@/modules/users/users.module';
+import { AuthModule } from '@/modules/auth/auth.module';
+import configuration from '@/config/configuration';
 
 @Module({
-  imports: [CategoriesModule, PrismaModule, PartsModule, VehiclesModule],
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      load: [configuration],
+    }),
+    CategoriesModule,
+    PrismaModule,
+    PartsModule,
+    VehiclesModule,
+    UsersModule,
+    AuthModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
