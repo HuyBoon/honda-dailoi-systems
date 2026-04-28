@@ -1,7 +1,15 @@
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { AreaChart, Area, ResponsiveContainer, BarChart, Bar, Tooltip } from 'recharts';
-import { Briefcase, Users, ShoppingCart, Percent, MoreHorizontal, Settings, Home, ChevronRight, ChevronDown, TrendingUp, TrendingDown } from 'lucide-react';
+import { Briefcase, Users, ShoppingCart, Percent, MoreHorizontal, Home, ChevronDown, TrendingUp, TrendingDown } from 'lucide-react';
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "../components/ui/breadcrumb";
 
 const areaData = [
   { name: 'Jan', value: 30 },
@@ -37,11 +45,20 @@ export const Dashboard = () => {
     <div className="p-6 md:p-8 max-w-[1600px] mx-auto w-full">
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-        <div className="flex items-center gap-2 text-gray-500 text-sm">
-          <span className="text-gray-800 font-semibold text-xl md:text-2xl mr-2">Dashboard</span>
-          <Home size={16} className="cursor-pointer hover:text-gray-900" />
-          <ChevronRight size={16} />
-          <span>eCommerce</span>
+        <div className="flex items-center gap-4">
+          <span className="text-gray-800 font-semibold text-xl md:text-2xl">Dashboard</span>
+          <div className="h-6 w-px bg-gray-200 hidden sm:block"></div>
+          <Breadcrumb className="hidden sm:flex">
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink href="/" className="flex items-center gap-1.5"><Home size={14} /> Home</BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage>eCommerce</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
         </div>
         <button className="flex items-center gap-2 bg-white border border-gray-200 text-honda-red font-medium px-4 py-2 rounded-md hover:bg-gray-50 transition-colors cursor-pointer outline-none shadow-sm">
           Settings <ChevronDown size={14}/>

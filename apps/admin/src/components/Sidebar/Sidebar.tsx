@@ -2,61 +2,46 @@ import { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  LayoutDashboard, 
-  Users, 
-  Settings,
-  ChevronRight,
-  Package,
-  FileText,
-  ShieldCheck,
-  CreditCard,
-  Car,
-  ArrowLeftRight,
-  X
+  LayoutDashboard, Users, Settings, ChevronRight, Package, 
+  FileText, Car, ArrowLeftRight, X 
 } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
 
 const MENU_GROUPS = [
-  {
-    header: 'CORE',
+  { 
+    header: 'TỔNG QUAN', 
     items: [
-      { path: '/', label: 'Dashboard', icon: LayoutDashboard },
+      { path: '/', label: 'Bảng thống kê', icon: LayoutDashboard }
+    ] 
+  },
+  { 
+    header: 'QUẢN LÝ KHO', 
+    items: [
+      { path: '/inventory', label: 'Kho phụ tùng', icon: Package },
+      { path: '/categories', label: 'Danh mục', icon: FileText },
+      { path: '/vehicles', label: 'Dòng xe', icon: Car },
     ]
   },
-  {
-    header: 'INVENTORY MANAGEMENT',
+  { 
+    header: 'GIAO DỊCH', 
     items: [
-      { path: '/inventory', label: 'Parts Catalog', icon: Package },
-      { path: '/categories', label: 'Categories', icon: FileText },
-      { path: '/vehicles', label: 'Vehicle Models', icon: Car },
+      { path: '/transactions', label: 'Nhập / Xuất kho', icon: ArrowLeftRight },
+      { path: '/orders', label: 'Đơn bán hàng', icon: Package },
     ]
   },
-  {
-    header: 'OPERATIONS',
+  { 
+    header: 'HỆ THỐNG', 
     items: [
-      { path: '/transactions', label: 'Import / Export', icon: ArrowLeftRight },
-      { path: '/orders', label: 'Sales Orders', icon: Package },
-    ]
-  },
-  {
-    header: 'SYSTEM & LOGS',
-    items: [
-      { path: '/users', label: 'Staff Management', icon: Users },
-      { path: '/settings', label: 'Settings', icon: Settings },
+      { path: '/users', label: 'Quản lý nhân viên', icon: Users },
+      { path: '/settings', label: 'Cài đặt', icon: Settings },
     ]
   }
 ];
-
 interface SidebarProps {
   isCollapsed: boolean;
   isMobileOpen: boolean;
   setIsMobileOpen: (val: boolean) => void;
 }
-
-import { 
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '../ui/tooltip';
 
 export const Sidebar = ({ isCollapsed, isMobileOpen, setIsMobileOpen }: SidebarProps) => {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
@@ -64,104 +49,97 @@ export const Sidebar = ({ isCollapsed, isMobileOpen, setIsMobileOpen }: SidebarP
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth < 1024);
-      if (window.innerWidth >= 1024) {
-        setIsMobileOpen(false); // Clean up mobile drawer state if pushed to desktop
-      }
+      if (window.innerWidth >= 1024) setIsMobileOpen(false);
     };
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, [setIsMobileOpen]);
 
-  const MobileOverlay = () => (
-    <AnimatePresence>
-      {isMobileOpen && (
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-black/40 z-[90] lg:hidden backdrop-blur-sm"
-          onClick={() => setIsMobileOpen(false)}
-        />
-      )}
-    </AnimatePresence>
-  );
-
   return (
     <>
-      <MobileOverlay />
+      {/* Overlay cho Mobile */}
+      <AnimatePresence>
+        {isMobileOpen && (
+          <motion.div 
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 z-[90] lg:hidden backdrop-blur-sm"
+            onClick={() => setIsMobileOpen(false)}
+          />
+        )}
+      </AnimatePresence>
       
       <motion.aside 
         animate={{ 
-          width: isCollapsed && !isMobile ? 80 : 260,
-          x: isMobileOpen ? 0 : (isMobile ? -260 : 0)
+          width: isMobile ? 260 : (isCollapsed ? 80 : 260),
+          x: isMobile ? (isMobileOpen ? 0 : -260) : 0
         }}
         transition={{ duration: 0.3, ease: 'easeInOut' }}
-        className={`h-screen bg-white border-r border-gray-100 flex flex-col fixed lg:relative z-[100] lg:z-50 overflow-y-auto ${isCollapsed && !isMobile ? 'w-[80px]' : 'w-[260px]'} lg:flex-shrink-0
-          ${isMobile && !isMobileOpen ? '-translate-x-full' : 'translate-x-0'}`}
+        className="fixed inset-y-0 left-0 bg-white border-r border-gray-200 flex flex-col z-[100] overflow-hidden shadow-sm"
       >
-        <div className="p-5 flex items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
-            {/* Velmax style brand logo */}
-            <div className="w-8 h-8 rounded-full bg-honda-red/10 border-2 border-honda-red flex items-center justify-center text-honda-red shrink-0 relative overflow-hidden">
-               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        <div className="h-16 px-5 flex items-center justify-between border-b border-gray-100">
+          <div className="flex items-center gap-3 overflow-hidden whitespace-nowrap">
+            <div className="w-8 h-8 rounded-full bg-red-50 border border-red-200 flex items-center justify-center text-red-600 shrink-0">
+               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
             </div>
-            {(!isCollapsed || isMobileOpen) && (
-              <span className="font-bold text-xl tracking-wide text-gray-800 uppercase">Đại Lợi</span>
+            {(!isCollapsed || isMobile) && (
+              <span className="font-bold text-lg tracking-wide text-gray-800 uppercase">Đại Lợi</span>
             )}
           </div>
           
-          {/* Mobile close button */}
-          {isMobileOpen && (
-            <button className="lg:hidden text-gray-500 hover:text-honda-red cursor-pointer p-1" onClick={() => setIsMobileOpen(false)}>
+          {isMobile && (
+            <button className="text-gray-400 hover:text-red-600" onClick={() => setIsMobileOpen(false)}>
               <X size={20} />
             </button>
           )}
         </div>
 
-        <nav className="flex-1 flex flex-col py-2 overflow-y-auto custom-scrollbar">
+        <nav className="flex-1 flex flex-col py-4 overflow-y-auto custom-scrollbar">
           {MENU_GROUPS.map((group, groupIdx) => (
-            <div key={groupIdx} className="mb-4">
-              {(!isCollapsed || isMobileOpen) && group.header && (
-                <h4 className="px-6 py-2 text-[11px] font-semibold text-gray-400 monitoring uppercase tracking-wider">
+            <div key={groupIdx} className="mb-6">
+              {(!isCollapsed || isMobile) && group.header && (
+                <h4 className="px-6 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">
                   {group.header}
                 </h4>
               )}
-              <ul className="list-none p-0 m-0 space-y-0.5">
-                {group.items.map((item) => (
-                  <li key={item.path}>
-                    <Tooltip>
-                      <TooltipTrigger>
-                        <NavLink 
-                          to={item.path}
-                          onClick={() => { if(window.innerWidth < 1024) setIsMobileOpen(false); }}
-                          className={({ isActive }) => `
-                            flex items-center px-6 py-3 transition-all duration-200 whitespace-nowrap outline-none relative group
-                            ${isActive 
-                              ? 'bg-honda-red/10 text-honda-red font-medium border-l-4 border-honda-red' 
-                              : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900 font-medium border-l-4 border-transparent'
-                            }
-                            ${(isCollapsed && !isMobileOpen) ? 'justify-center px-0 border-none' : ''}
-                          `}
-                        >
-                          {({ isActive }) => (
-                            <>
-                              <item.icon size={20} className={`flex-shrink-0 ${(isCollapsed && !isMobileOpen) ? '' : 'mr-4'} ${isActive ? 'text-honda-red' : 'text-gray-400 group-hover:text-gray-600'}`} />
-                              {(!isCollapsed || isMobileOpen) && <span className="text-[14px]">{item.label}</span>}
-                              {(!isCollapsed || isMobileOpen) && (group.header === '' || group.header === 'PAGES' || group.header === 'UI ELEMENTS' || group.header === 'FORMS & TABLES') && (
-                                <ChevronRight size={14} className={`ml-auto hidden ${isActive ? 'text-honda-red/50' : 'text-gray-300'}`} />
-                              )}
-                            </>
-                          )}
-                        </NavLink>
-                      </TooltipTrigger>
-                      {(isCollapsed && !isMobileOpen) && (
-                        <TooltipContent side="right" sideOffset={18} className="bg-gray-800 text-white border-none font-medium text-xs px-3 py-1.5 z-[150]">
-                          {item.label}
-                        </TooltipContent>
+              <ul className="space-y-1">
+                {group.items.map((item) => {
+                  const navLinkContent = (
+                    <NavLink 
+                      to={item.path}
+                      onClick={() => isMobile && setIsMobileOpen(false)}
+                      className={({ isActive }) => `
+                        flex items-center mx-3 px-3 py-2.5 rounded-lg transition-colors group
+                        ${isActive ? 'bg-red-600 text-white shadow-md' : 'text-gray-600 hover:bg-red-50 hover:text-red-600'}
+                        ${isCollapsed && !isMobile ? 'justify-center' : ''}
+                      `}
+                    >
+                      {({ isActive }) => (
+                        <>
+                          <item.icon size={20} className={`shrink-0 ${isCollapsed && !isMobile ? '' : 'mr-3'} ${isActive ? 'text-white' : 'text-gray-400 group-hover:text-red-600'}`} />
+                          {(!isCollapsed || isMobile) && <span className="text-sm font-medium">{item.label}</span>}
+                          {(!isCollapsed || isMobile) && <ChevronRight size={16} className={`ml-auto ${isActive ? 'text-white/70' : 'text-gray-300 group-hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity'}`} />}
+                        </>
                       )}
-                    </Tooltip>
-                  </li>
-                ))}
+                    </NavLink>
+                  );
+
+                  return (
+                    <li key={item.path}>
+                      {isCollapsed && !isMobile ? (
+                        <Tooltip>
+                          <TooltipTrigger className="w-full">
+                            {navLinkContent}
+                          </TooltipTrigger>
+                          <TooltipContent side="right" className="bg-gray-800 text-white font-medium text-xs rounded-md px-3 py-2 shadow-lg border border-gray-700 ml-4 z-[150] flex items-center">
+                            {item.label}
+                          </TooltipContent>
+                        </Tooltip>
+                      ) : (
+                        navLinkContent
+                      )}
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           ))}

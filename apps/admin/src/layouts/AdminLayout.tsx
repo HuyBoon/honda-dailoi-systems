@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 import { Sidebar } from '../components/Sidebar/Sidebar';
 import { Topbar } from '../components/Topbar/Topbar';
@@ -8,7 +8,7 @@ export const AdminLayout = () => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  const handleMenuClick = () => {
+  const handleMenuToggle = () => {
     if (window.innerWidth < 1024) {
       setIsMobileMenuOpen(true);
     } else {
@@ -18,23 +18,26 @@ export const AdminLayout = () => {
 
   return (
     <TooltipProvider>
-      <div className="flex min-h-screen bg-[#f4f6f8] font-sans relative overflow-hidden">
-      <Sidebar 
-        isCollapsed={isSidebarCollapsed} 
-        isMobileOpen={isMobileMenuOpen}
-        setIsMobileOpen={setIsMobileMenuOpen}
-      />
-      <main className="flex-1 flex flex-col h-screen overflow-hidden relative z-10 w-full">
-        <Topbar 
-          onMenuClick={handleMenuClick} 
-        />
+      <div className="min-h-screen bg-gray-50/50 font-sans">
         
-        {/* Scrollable content area */}
-        <div className="flex-1 overflow-y-auto w-full relative">
-          <Outlet />
-        </div>
-      </main>
-    </div>
+        <Sidebar 
+          isCollapsed={isSidebarCollapsed} 
+          isMobileOpen={isMobileMenuOpen}
+          setIsMobileOpen={setIsMobileMenuOpen}
+        />
+
+        <main 
+          className={`transition-all duration-300 ease-in-out min-h-screen flex flex-col relative z-10 
+            ${isSidebarCollapsed ? 'lg:ml-[80px]' : 'lg:ml-[260px]'}`}
+        >
+          <Topbar onMenuClick={handleMenuToggle} />
+          
+          <div className="flex-1 p-4 md:p-6 overflow-x-hidden">
+            <Outlet />
+          </div>
+        </main>
+
+      </div>
     </TooltipProvider>
   );
 };
