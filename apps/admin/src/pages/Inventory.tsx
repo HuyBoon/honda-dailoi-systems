@@ -130,7 +130,7 @@ export const Inventory = () => {
       {/* Header & Controls */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white p-5 rounded-xl border border-gray-100 shadow-sm">
         <div>
-          <h1 className="text-2xl font-bold text-gray-800">Kho phụ tùng</h1>
+          <h1 className="text-2xl font-bold text-honda-red">Kho phụ tùng</h1>
           <p className="text-sm text-gray-500">Quản lý kho và danh mục phụ tùng Honda</p>
         </div>
         <div className="flex flex-col sm:flex-row w-full md:w-auto gap-3">
