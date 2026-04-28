@@ -1,7 +1,18 @@
-import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
-import { AreaChart, Area, ResponsiveContainer, BarChart, Bar, Tooltip } from 'recharts';
-import { Briefcase, Users, ShoppingCart, Percent, MoreHorizontal, Home, ChevronDown, TrendingUp, TrendingDown } from 'lucide-react';
+import { Button } from '../components/ui/button';
+import { AreaChart, Area, ResponsiveContainer, Tooltip as ChartTooltip } from 'recharts';
+import { 
+  Package, 
+  FolderOpen, 
+  Car, 
+  AlertTriangle, 
+  Home, 
+  TrendingUp, 
+  History, 
+  ArrowUpRight, 
+  ArrowDownLeft,
+  DollarSign
+} from 'lucide-react';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -10,6 +21,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "../components/ui/breadcrumb";
+import { useGetDashboardStatsQuery } from '../store/api/statsApiSlice';
 
 const areaData = [
   { name: 'Jan', value: 30 },
@@ -21,215 +33,180 @@ const areaData = [
   { name: 'Jul', value: 40 },
 ];
 
-const barData = [
-  { name: '1', clicks: 800, views: -500 },
-  { name: '2', clicks: 400, views: -700 },
-  { name: '3', clicks: 500, views: -400 },
-  { name: '4', clicks: 900, views: -600 },
-  { name: '5', clicks: 400, views: -400 },
-  { name: '6', clicks: 600, views: -900 },
-  { name: '7', clicks: 400, views: -500 },
-];
-
-const countryData = [
-  { country: 'United states', flag: '🇺🇸', value: '$84.5K', trend: 25, up: true },
-  { country: 'India', flag: '🇮🇳', value: '$750', trend: 18, up: true },
-  { country: 'China', flag: '🇨🇳', value: '$38.5', trend: -14, up: false },
-  { country: 'France', flag: '🇫🇷', value: '$88.0K', trend: 28, up: true },
-  { country: 'Australia', flag: '🇦🇺', value: '$78.3K', trend: -16, up: false },
-  { country: 'Brazil', flag: '🇧🇷', value: '$10.5K', trend: 25, up: true },
-];
-
 export const Dashboard = () => {
+  const { data: stats, isLoading } = useGetDashboardStatsQuery();
+
+  const formatPrice = (price: number) => {
+    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
+  };
+
+  if (isLoading) {
+    return (
+      <div className="p-8 flex items-center justify-center min-h-[60vh]">
+        <div className="w-12 h-12 border-4 border-red-600 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+
   return (
     <div className="p-6 md:p-8 max-w-[1600px] mx-auto w-full">
       {/* Page Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
         <div className="flex items-center gap-4">
-          <span className="text-gray-800 font-semibold text-xl md:text-2xl">Dashboard</span>
+          <span className="text-gray-900 font-bold text-2xl">Bảng thống kê</span>
           <div className="h-6 w-px bg-gray-200 hidden sm:block"></div>
           <Breadcrumb className="hidden sm:flex">
             <BreadcrumbList>
               <BreadcrumbItem>
-                <BreadcrumbLink href="/" className="flex items-center gap-1.5"><Home size={14} /> Home</BreadcrumbLink>
+                <BreadcrumbLink href="/" className="flex items-center gap-1.5"><Home size={14} /> Trang chủ</BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <BreadcrumbPage>eCommerce</BreadcrumbPage>
+                <BreadcrumbPage>Thống kê chung</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
         </div>
-        <button className="flex items-center gap-2 bg-white border border-gray-200 text-honda-red font-medium px-4 py-2 rounded-md hover:bg-gray-50 transition-colors cursor-pointer outline-none shadow-sm">
-          Settings <ChevronDown size={14}/>
-        </button>
       </div>
 
       {/* Top 4 Metrics Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         
-        {/* Metric 1 */}
-        <Card className="border-gray-200 shadow-sm rounded-xl overflow-hidden">
-          <CardContent className="p-5 flex justify-between items-start">
+        {/* Metric 1: Total Value */}
+        <Card className="border-none shadow-md shadow-gray-200/50 rounded-2xl bg-white overflow-hidden group hover:shadow-xl transition-all duration-300">
+          <CardContent className="p-6 flex justify-between items-start">
             <div>
-              <p className="text-[14px] font-medium text-gray-600 mb-2">Total Revenue</p>
-              <h3 className="text-2xl font-bold text-gray-900">$92,854</h3>
+              <p className="text-[13px] font-bold text-gray-400 uppercase tracking-wider mb-1">Giá trị kho hàng</p>
+              <h3 className="text-2xl font-black text-gray-900">{formatPrice(stats?.totalValue || 0)}</h3>
             </div>
-            <div className="flex flex-col items-end justify-between h-full gap-4">
-              <div className="w-9 h-9 rounded-full bg-honda-red/10 flex items-center justify-center text-honda-red">
-                <Briefcase size={16} />
-              </div>
-              <span className="text-xs font-semibold text-green-500">+6.32%</span>
+            <div className="w-12 h-12 rounded-2xl bg-red-50 flex items-center justify-center text-red-600 group-hover:bg-red-600 group-hover:text-white transition-colors duration-300">
+              <DollarSign size={22} />
             </div>
           </CardContent>
         </Card>
 
-        {/* Metric 2 */}
-        <Card className="border-gray-200 shadow-sm rounded-xl overflow-hidden">
-          <CardContent className="p-5 flex justify-between items-start">
+        {/* Metric 2: Total Parts */}
+        <Card className="border-none shadow-md shadow-gray-200/50 rounded-2xl bg-white overflow-hidden group hover:shadow-xl transition-all duration-300">
+          <CardContent className="p-6 flex justify-between items-start">
             <div>
-              <p className="text-[14px] font-medium text-gray-600 mb-2">Total Customer</p>
-              <h3 className="text-2xl font-bold text-gray-900">48,789</h3>
+              <p className="text-[13px] font-bold text-gray-400 uppercase tracking-wider mb-1">Tổng số phụ tùng</p>
+              <h3 className="text-2xl font-black text-gray-900">{stats?.totalParts || 0} <span className="text-sm font-medium text-gray-400">mã</span></h3>
             </div>
-            <div className="flex flex-col items-end justify-between h-full gap-4">
-              <div className="w-9 h-9 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
-                <Users size={16} />
-              </div>
-              <span className="text-xs font-semibold text-green-500">+12.45%</span>
+            <div className="w-12 h-12 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-colors duration-300">
+              <Package size={22} />
             </div>
           </CardContent>
         </Card>
 
-        {/* Metric 3 */}
-        <Card className="border-gray-200 shadow-sm rounded-xl overflow-hidden">
-          <CardContent className="p-5 flex justify-between items-start">
+        {/* Metric 3: Low Stock */}
+        <Card className="border-none shadow-md shadow-gray-200/50 rounded-2xl bg-white overflow-hidden group hover:shadow-xl transition-all duration-300">
+          <CardContent className="p-6 flex justify-between items-start">
             <div>
-              <p className="text-[14px] font-medium text-gray-600 mb-2">Total Orders</p>
-              <h3 className="text-2xl font-bold text-gray-900">88,234</h3>
+              <p className="text-[13px] font-bold text-gray-400 uppercase tracking-wider mb-1">Cảnh báo tồn kho</p>
+              <h3 className={`text-2xl font-black ${(stats?.lowStockCount || 0) > 0 ? 'text-red-500' : 'text-gray-900'}`}>
+                {stats?.lowStockCount || 0} <span className="text-sm font-medium text-gray-400">sắp hết</span>
+              </h3>
             </div>
-            <div className="flex flex-col items-end justify-between h-full gap-4">
-              <div className="w-9 h-9 rounded-full bg-orange-100 flex items-center justify-center text-orange-500">
-                <ShoppingCart size={16} />
-              </div>
-              <span className="text-xs font-semibold text-green-500">+3.12%</span>
+            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-colors duration-300 ${(stats?.lowStockCount || 0) > 0 ? 'bg-red-50 text-red-600 group-hover:bg-red-600 group-hover:text-white' : 'bg-green-50 text-green-600 group-hover:bg-green-600 group-hover:text-white'}`}>
+              <AlertTriangle size={22} />
             </div>
           </CardContent>
         </Card>
 
-        {/* Metric 4 */}
-        <Card className="border-gray-200 shadow-sm rounded-xl overflow-hidden">
-          <CardContent className="p-5 flex justify-between items-start">
+        {/* Metric 4: Infrastructure */}
+        <Card className="border-none shadow-md shadow-gray-200/50 rounded-2xl bg-white overflow-hidden group hover:shadow-xl transition-all duration-300">
+          <CardContent className="p-6 flex justify-between items-start">
             <div>
-              <p className="text-[14px] font-medium text-gray-600 mb-2">Conversion Rate</p>
-              <h3 className="text-2xl font-bold text-gray-900">48.76%</h3>
+              <p className="text-[13px] font-bold text-gray-400 uppercase tracking-wider mb-1">Danh mục & Dòng xe</p>
+              <h3 className="text-2xl font-black text-gray-900">{stats?.totalCategories || 0} / {stats?.totalVehicles || 0}</h3>
             </div>
-            <div className="flex flex-col items-end justify-between h-full gap-4">
-              <div className="w-9 h-9 rounded-full bg-green-100 flex items-center justify-center text-green-600">
-                <Percent size={16} />
-              </div>
-              <span className="text-xs font-semibold text-green-500">+8.52%</span>
+            <div className="w-12 h-12 rounded-2xl bg-purple-50 flex items-center justify-center text-purple-600 group-hover:bg-purple-600 group-hover:text-white transition-colors duration-300">
+              <FolderOpen size={22} />
             </div>
           </CardContent>
         </Card>
 
       </div>
 
-      {/* Main Analytics Grid - 3 Columns (similar to demo) */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
-        {/* Sales by Countries List */}
-        <Card className="border-gray-200 shadow-sm rounded-xl col-span-1 border">
-          <CardHeader className="p-5 flex flex-row items-center justify-between pb-2 border-none">
-            <CardTitle className="text-[15px] font-semibold text-gray-800">Sales by Countries</CardTitle>
-            <MoreHorizontal size={20} className="text-gray-400 cursor-pointer" />
+        {/* Recent Transactions List */}
+        <Card className="border-none shadow-md shadow-gray-200/50 rounded-2xl col-span-1 lg:max-h-[500px] overflow-hidden flex flex-col">
+          <CardHeader className="p-6 flex flex-row items-center justify-between pb-4">
+            <CardTitle className="text-lg font-bold text-gray-800 flex items-center gap-2">
+              <History size={18} className="text-red-600" />
+              Giao dịch gần đây
+            </CardTitle>
           </CardHeader>
-          <CardContent className="p-5 pt-0">
-            <div className="flex flex-col gap-4 mt-2">
-              {countryData.map((data, index) => (
-                <div key={index} className="flex justify-between items-center group">
-                  <div className="flex items-center gap-3">
-                    <div className="text-2xl opacity-90 group-hover:scale-110 transition-transform">{data.flag}</div>
-                    <div className="flex flex-col">
-                      <span className="text-[15px] font-semibold text-gray-900">{data.value}</span>
-                      <span className="text-xs text-gray-500">{data.country}</span>
+          <CardContent className="p-0 flex-1 overflow-y-auto custom-scrollbar">
+            <div className="px-6 pb-6">
+              {stats?.recentTransactions && stats.recentTransactions.length > 0 ? (
+                <div className="space-y-4">
+                  {stats.recentTransactions.map((tx, idx) => (
+                    <div key={idx} className="flex items-center justify-between group">
+                      <div className="flex items-center gap-3">
+                        <div className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 ${tx.type === 'IMPORT' ? 'bg-green-50 text-green-600' : 'bg-orange-50 text-orange-600'}`}>
+                          {tx.type === 'IMPORT' ? <ArrowDownLeft size={16} /> : <ArrowUpRight size={16} />}
+                        </div>
+                        <div className="flex flex-col">
+                          <span className="text-sm font-bold text-gray-800 line-clamp-1">{tx.part.name}</span>
+                          <span className="text-[11px] font-medium text-gray-400 capitalize">{tx.type === 'IMPORT' ? 'Nhập kho' : 'Xuất kho'} • {new Date(tx.createdAt).toLocaleDateString()}</span>
+                        </div>
+                      </div>
+                      <span className={`text-sm font-black ${tx.type === 'IMPORT' ? 'text-green-600' : 'text-orange-600'}`}>
+                        {tx.type === 'IMPORT' ? '+' : '-'}{tx.quantity}
+                      </span>
                     </div>
-                  </div>
-                  <div className={`flex items-center gap-1 text-[13px] font-bold ${data.up ? 'text-green-500' : 'text-red-500'}`}>
-                    {data.up ? <TrendingUp size={14} /> : <TrendingDown size={14} />}
-                    {Math.abs(data.trend)}%
-                  </div>
+                  ))}
                 </div>
-              ))}
+              ) : (
+                <div className="h-48 flex items-center justify-center text-gray-400 text-sm">Chưa có giao dịch nào</div>
+              )}
             </div>
           </CardContent>
         </Card>
 
         {/* Total Earning Area Chart */}
-        <Card className="border-gray-200 shadow-sm rounded-xl flex flex-col items-stretch col-span-1">
-          <CardHeader className="p-5 flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-[15px] font-semibold text-gray-800">Total Earning</CardTitle>
-            <MoreHorizontal size={20} className="text-gray-400 cursor-pointer" />
+        <Card className="border-none shadow-md shadow-gray-200/50 rounded-2xl flex flex-col items-stretch col-span-1 lg:col-span-2">
+          <CardHeader className="p-6 flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-lg font-bold text-gray-800 flex items-center gap-2">
+               <TrendingUp size={18} className="text-red-600" />
+               Biểu đồ biến động kho
+            </CardTitle>
           </CardHeader>
           <CardContent className="p-0 flex-1 flex flex-col justify-between">
-            <div className="px-5 mb-2 flex items-baseline gap-2">
-              <span className="text-4xl font-bold text-gray-900">68%</span>
-              <span className="text-sm font-semibold text-green-500 flex items-center gap-1"><TrendingUp size={14}/> 25%</span>
+            <div className="px-6 mb-2 flex items-baseline gap-2">
+              <span className="text-4xl font-black text-gray-900">+24%</span>
+              <span className="text-sm font-bold text-green-500 flex items-center gap-1">Tuần này</span>
             </div>
             
-            {/* Area Chart visual replacing the generic wave */}
-            <div className="w-full h-[220px] mt-4 mb-2">
+            <div className="w-full h-[280px] mt-4">
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={areaData} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
+                <AreaChart data={areaData} margin={{ top: 10, right: 10, left: 10, bottom: 0 }}>
                   <defs>
                     <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#cc0000" stopOpacity={0.3}/>
+                      <stop offset="5%" stopColor="#cc0000" stopOpacity={0.2}/>
                       <stop offset="95%" stopColor="#cc0000" stopOpacity={0}/>
                     </linearGradient>
                   </defs>
-                  <Tooltip wrapperClassName="hidden" />
-                  <Area type="monotone" dataKey="value" stroke="#cc0000" strokeWidth={3} fillOpacity={1} fill="url(#colorValue)" />
+                  <ChartTooltip 
+                    contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
+                  />
+                  <Area type="monotone" dataKey="value" stroke="#cc0000" strokeWidth={4} fillOpacity={1} fill="url(#colorValue)" />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
 
-            {/* Bottom Summaries */}
-            <div className="p-5 border-t border-gray-100 flex flex-col gap-4">
-               <div className="flex items-center gap-4">
-                 <div className="w-10 h-10 rounded-xl bg-green-50 flex items-center justify-center text-green-600"><Briefcase size={18}/></div>
+            <div className="p-6 border-t border-gray-50 flex items-center justify-between">
+               <div className="flex items-center gap-3">
+                 <div className="w-10 h-10 rounded-xl bg-red-600 flex items-center justify-center text-white shadow-lg shadow-red-600/20"><Car size={20}/></div>
                  <div className="flex flex-col">
-                   <span className="text-[15px] font-bold text-gray-900">$545.69</span>
-                   <span className="text-[12px] text-gray-500">Last Month Sales</span>
+                   <span className="text-sm font-bold text-gray-800">Dòng xe hot nhất</span>
+                   <span className="text-[12px] text-gray-500">Air Blade 2023 (125cc)</span>
                  </div>
-                 <span className="ml-auto text-green-500 text-sm font-bold flex items-center"><TrendingUp size={14}/>35%</span>
                </div>
+               <Button variant="ghost" className="text-red-600 font-bold hover:bg-red-50 rounded-lg">Xem chi tiết</Button>
             </div>
-          </CardContent>
-        </Card>
-
-        {/* Total Traffic Bar Chart */}
-        <Card className="border-gray-200 shadow-sm rounded-xl col-span-1 relative">
-          <CardHeader className="p-5 flex flex-row items-center justify-between pb-0">
-            <CardTitle className="text-[15px] font-semibold text-gray-800">Total Traffic</CardTitle>
-            <MoreHorizontal size={20} className="text-gray-400 cursor-pointer" />
-          </CardHeader>
-          <CardContent className="p-5 pt-3">
-             <div className="flex gap-4 mb-4">
-               <div className="flex items-center gap-1.5 text-xs text-gray-600 font-medium">
-                 <span className="w-2.5 h-2.5 rounded-full bg-blue-500 block"></span> Clicks
-               </div>
-               <div className="flex items-center gap-1.5 text-xs text-gray-600 font-medium">
-                 <span className="w-2.5 h-2.5 rounded-full bg-green-500 block"></span> Views
-               </div>
-             </div>
-             
-             <div className="w-full h-[300px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={barData} margin={{ top: 10, right: 0, left: -20, bottom: 0 }} layout="horizontal" stackOffset="sign">
-                    <Bar dataKey="clicks" fill="#3b82f6" radius={[4, 4, 0, 0]} maxBarSize={12} />
-                    <Bar dataKey="views" fill="#22c55e" radius={[0, 0, 4, 4]} maxBarSize={12} />
-                  </BarChart>
-                </ResponsiveContainer>
-             </div>
           </CardContent>
         </Card>
 

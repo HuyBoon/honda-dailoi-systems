@@ -11,6 +11,7 @@ import { UsersModule } from '@/modules/users/users.module';
 import { AuthModule } from '@/modules/auth/auth.module';
 import { HealthModule } from '@/modules/health/health.module';
 import { TransactionsModule } from './modules/transactions/transactions.module';
+import { StatsModule } from './modules/stats/stats.module';
 import configuration from '@/config/configuration';
 
 @Module({
@@ -27,6 +28,7 @@ import configuration from '@/config/configuration';
     AuthModule,
     HealthModule,
     TransactionsModule,
+    StatsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -32,7 +32,7 @@ export const transactionApiSlice = apiSlice.injectEndpoints({
         method: 'POST',
         body,
       }),
-      invalidatesTags: ['Inventory', 'Part'], // Invalidate parts so stock reflects accurately
+      invalidatesTags: ['Inventory', 'Part', 'Dashboard'], // Invalidate parts so stock reflects accurately
     }),
   }),
 });
