@@ -1,19 +1,40 @@
+import { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import { Sidebar } from '../components/Sidebar/Sidebar';
+import { Topbar } from '../components/Topbar/Topbar';
+import { TooltipProvider } from '../components/ui/tooltip';
 
 export const AdminLayout = () => {
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const handleMenuClick = () => {
+    if (window.innerWidth < 1024) {
+      setIsMobileMenuOpen(true);
+    } else {
+      setIsSidebarCollapsed(!isSidebarCollapsed);
+    }
+  };
+
   return (
-    <div className="flex min-h-screen bg-honda-dark text-white font-sans relative overflow-hidden">
-      {/* Background radial gradients replacing CSS pseudo-elements */}
-      <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-honda-red/5 rounded-full blur-[120px] pointer-events-none -z-10 translate-x-1/2 -translate-y-1/2" />
-      <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-blue-900/5 rounded-full blur-[100px] pointer-events-none -z-10 -translate-x-1/2 translate-y-1/2" />
-      
-      <Sidebar />
-      <main className="flex-1 h-screen overflow-y-auto relative z-10 w-full">
-        <div className="w-full min-h-full">
+    <TooltipProvider>
+      <div className="flex min-h-screen bg-[#f4f6f8] font-sans relative overflow-hidden">
+      <Sidebar 
+        isCollapsed={isSidebarCollapsed} 
+        isMobileOpen={isMobileMenuOpen}
+        setIsMobileOpen={setIsMobileMenuOpen}
+      />
+      <main className="flex-1 flex flex-col h-screen overflow-hidden relative z-10 w-full">
+        <Topbar 
+          onMenuClick={handleMenuClick} 
+        />
+        
+        {/* Scrollable content area */}
+        <div className="flex-1 overflow-y-auto w-full relative">
           <Outlet />
         </div>
       </main>
     </div>
+    </TooltipProvider>
   );
 };

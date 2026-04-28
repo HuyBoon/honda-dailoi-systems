@@ -1,87 +1,172 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
   LayoutDashboard, 
   Users, 
-  Settings, 
-  LogOut,
-  ChevronLeft,
+  Settings,
   ChevronRight,
-  Package
+  Package,
+  FileText,
+  ShieldCheck,
+  CreditCard,
+  Car,
+  ArrowLeftRight,
+  X
 } from 'lucide-react';
-import { useAppDispatch } from '../../store/hooks';
-import { logout } from '../../store/slices/authSlice';
 
-const NAV_ITEMS = [
-  { path: '/', label: 'Dashboard', icon: LayoutDashboard },
-  { path: '/users', label: 'Users', icon: Users },
-  { path: '/inventory', label: 'Inventory', icon: Package },
-  { path: '/settings', label: 'Settings', icon: Settings },
+const MENU_GROUPS = [
+  {
+    header: 'CORE',
+    items: [
+      { path: '/', label: 'Dashboard', icon: LayoutDashboard },
+    ]
+  },
+  {
+    header: 'INVENTORY MANAGEMENT',
+    items: [
+      { path: '/inventory', label: 'Parts Catalog', icon: Package },
+      { path: '/categories', label: 'Categories', icon: FileText },
+      { path: '/vehicles', label: 'Vehicle Models', icon: Car },
+    ]
+  },
+  {
+    header: 'OPERATIONS',
+    items: [
+      { path: '/transactions', label: 'Import / Export', icon: ArrowLeftRight },
+      { path: '/orders', label: 'Sales Orders', icon: Package },
+    ]
+  },
+  {
+    header: 'SYSTEM & LOGS',
+    items: [
+      { path: '/users', label: 'Staff Management', icon: Users },
+      { path: '/settings', label: 'Settings', icon: Settings },
+    ]
+  }
 ];
 
-export const Sidebar = () => {
-  const [isCollapsed, setIsCollapsed] = useState(false);
-  const dispatch = useAppDispatch();
+interface SidebarProps {
+  isCollapsed: boolean;
+  isMobileOpen: boolean;
+  setIsMobileOpen: (val: boolean) => void;
+}
 
-  const handleLogout = () => {
-    dispatch(logout());
-  };
+import { 
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '../ui/tooltip';
+
+export const Sidebar = ({ isCollapsed, isMobileOpen, setIsMobileOpen }: SidebarProps) => {
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 1024);
+      if (window.innerWidth >= 1024) {
+        setIsMobileOpen(false); // Clean up mobile drawer state if pushed to desktop
+      }
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [setIsMobileOpen]);
+
+  const MobileOverlay = () => (
+    <AnimatePresence>
+      {isMobileOpen && (
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 bg-black/40 z-[90] lg:hidden backdrop-blur-sm"
+          onClick={() => setIsMobileOpen(false)}
+        />
+      )}
+    </AnimatePresence>
+  );
 
   return (
-    <motion.aside 
-      className="h-screen bg-[#141419]/95 backdrop-blur-xl border-r border-white/5 flex flex-col text-white sticky top-0 z-[100] overflow-x-hidden shadow-xl"
-      initial={false}
-      animate={{ width: isCollapsed ? 80 : 260 }}
-      transition={{ duration: 0.3, ease: 'easeInOut' }}
-    >
-      <div className={`h-20 flex items-center border-b border-white/5 ${isCollapsed ? 'justify-center px-0' : 'justify-between px-6'}`}>
-        {!isCollapsed && (
-          <motion.h2 
-            className="text-xl font-bold m-0 text-white tracking-wide whitespace-nowrap"
-            initial={{ opacity: 0 }} 
-            animate={{ opacity: 1 }} 
-            exit={{ opacity: 0 }}
-          >
-            HDL Admin
-          </motion.h2>
-        )}
-        <button 
-          className="bg-transparent border-none text-honda-light/60 cursor-pointer flex items-center justify-center p-2 rounded-lg transition-all hover:bg-white/10 hover:text-white"
-          onClick={() => setIsCollapsed(!isCollapsed)}
-          aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-        >
-          {isCollapsed ? <ChevronRight size={20} /> : <ChevronLeft size={20} />}
-        </button>
-      </div>
+    <>
+      <MobileOverlay />
+      
+      <motion.aside 
+        animate={{ 
+          width: isCollapsed && !isMobile ? 80 : 260,
+          x: isMobileOpen ? 0 : (isMobile ? -260 : 0)
+        }}
+        transition={{ duration: 0.3, ease: 'easeInOut' }}
+        className={`h-screen bg-white border-r border-gray-100 flex flex-col fixed lg:relative z-[100] lg:z-50 overflow-y-auto ${isCollapsed && !isMobile ? 'w-[80px]' : 'w-[260px]'} lg:flex-shrink-0
+          ${isMobile && !isMobileOpen ? '-translate-x-full' : 'translate-x-0'}`}
+      >
+        <div className="p-5 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            {/* Velmax style brand logo */}
+            <div className="w-8 h-8 rounded-full bg-honda-red/10 border-2 border-honda-red flex items-center justify-center text-honda-red shrink-0 relative overflow-hidden">
+               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+            </div>
+            {(!isCollapsed || isMobileOpen) && (
+              <span className="font-bold text-xl tracking-wide text-gray-800 uppercase">Đại Lợi</span>
+            )}
+          </div>
+          
+          {/* Mobile close button */}
+          {isMobileOpen && (
+            <button className="lg:hidden text-gray-500 hover:text-honda-red cursor-pointer p-1" onClick={() => setIsMobileOpen(false)}>
+              <X size={20} />
+            </button>
+          )}
+        </div>
 
-      <nav className="flex-1 py-6 px-4 flex flex-col gap-2">
-        {NAV_ITEMS.map((item) => {
-          const Icon = item.icon;
-          return (
-            <NavLink 
-              key={item.path} 
-              to={item.path} 
-              className={({ isActive }) => `flex items-center px-4 py-3.5 rounded-xl text-[#a0a0a5] decoration-none transition-all duration-200 whitespace-nowrap outline-none ${isActive ? 'bg-honda-red/15 text-honda-red font-medium border-l-4 border-honda-red' : 'hover:bg-white/5 hover:text-white border-l-4 border-transparent'} ${isCollapsed ? 'justify-center px-0' : ''}`}
-              title={isCollapsed ? item.label : undefined}
-            >
-              <Icon size={22} className="flex-shrink-0" />
-              {!isCollapsed && <span className="ml-4 text-[0.95rem]">{item.label}</span>}
-            </NavLink>
-          );
-        })}
-      </nav>
-
-      <div className="p-4 border-t border-white/5">
-        <button 
-          className={`w-full flex items-center px-4 py-3.5 rounded-xl text-[#a0a0a5] decoration-none transition-all duration-200 whitespace-nowrap outline-none bg-transparent border-none cursor-pointer hover:bg-red-500/10 hover:text-red-400 font-inherit text-left ${isCollapsed ? 'justify-center px-0' : ''}`}
-          onClick={handleLogout} 
-          title={isCollapsed ? "Logout" : undefined}
-        >
-          <LogOut size={22} className="flex-shrink-0" />
-          {!isCollapsed && <span className="ml-4 text-[0.95rem]">Logout</span>}
-        </button>
-      </div>
-    </motion.aside>
+        <nav className="flex-1 flex flex-col py-2 overflow-y-auto custom-scrollbar">
+          {MENU_GROUPS.map((group, groupIdx) => (
+            <div key={groupIdx} className="mb-4">
+              {(!isCollapsed || isMobileOpen) && group.header && (
+                <h4 className="px-6 py-2 text-[11px] font-semibold text-gray-400 monitoring uppercase tracking-wider">
+                  {group.header}
+                </h4>
+              )}
+              <ul className="list-none p-0 m-0 space-y-0.5">
+                {group.items.map((item) => (
+                  <li key={item.path}>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <NavLink 
+                          to={item.path}
+                          onClick={() => { if(window.innerWidth < 1024) setIsMobileOpen(false); }}
+                          className={({ isActive }) => `
+                            flex items-center px-6 py-3 transition-all duration-200 whitespace-nowrap outline-none relative group
+                            ${isActive 
+                              ? 'bg-honda-red/10 text-honda-red font-medium border-l-4 border-honda-red' 
+                              : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900 font-medium border-l-4 border-transparent'
+                            }
+                            ${(isCollapsed && !isMobileOpen) ? 'justify-center px-0 border-none' : ''}
+                          `}
+                        >
+                          {({ isActive }) => (
+                            <>
+                              <item.icon size={20} className={`flex-shrink-0 ${(isCollapsed && !isMobileOpen) ? '' : 'mr-4'} ${isActive ? 'text-honda-red' : 'text-gray-400 group-hover:text-gray-600'}`} />
+                              {(!isCollapsed || isMobileOpen) && <span className="text-[14px]">{item.label}</span>}
+                              {(!isCollapsed || isMobileOpen) && (group.header === '' || group.header === 'PAGES' || group.header === 'UI ELEMENTS' || group.header === 'FORMS & TABLES') && (
+                                <ChevronRight size={14} className={`ml-auto hidden ${isActive ? 'text-honda-red/50' : 'text-gray-300'}`} />
+                              )}
+                            </>
+                          )}
+                        </NavLink>
+                      </TooltipTrigger>
+                      {(isCollapsed && !isMobileOpen) && (
+                        <TooltipContent side="right" sideOffset={18} className="bg-gray-800 text-white border-none font-medium text-xs px-3 py-1.5 z-[150]">
+                          {item.label}
+                        </TooltipContent>
+                      )}
+                    </Tooltip>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </nav>
+      </motion.aside>
+    </>
   );
 };
