@@ -7,6 +7,7 @@ import { Register } from '../pages/Register';
 import { Categories } from '../pages/Categories';
 import { Inventory } from '../pages/Inventory';
 import { Dashboard } from '../pages/Dashboard';
+import { Vehicles } from '../pages/Vehicles';
 import { NotFound } from '../pages/NotFound';
 
 export const router = createBrowserRouter([
@@ -45,6 +46,10 @@ export const router = createBrowserRouter([
           {
             path: 'categories',
             element: <Categories />,
+          },
+          {
+            path: 'vehicles',
+            element: <Vehicles />,
           },
           {
             path: 'settings',
