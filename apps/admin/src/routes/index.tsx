@@ -4,6 +4,8 @@ import { AdminLayout } from '../layouts/AdminLayout';
 import { AuthLayout } from '../layouts/AuthLayout';
 import { Login } from '../pages/Login';
 import { Register } from '../pages/Register';
+import { Categories } from '../pages/Categories';
+import { Inventory } from '../pages/Inventory';
 import { Dashboard } from '../pages/Dashboard';
 import { NotFound } from '../pages/NotFound';
 
@@ -34,11 +36,15 @@ export const router = createBrowserRouter([
           },
           {
             path: 'users',
-            element: <div style={{ padding: '2rem', color: 'white' }}><h2>Users Page (Placeholder)</h2></div>,
+            element: <div style={{ padding: '2rem', color: 'white' }}><h2>Staff Page (Placeholder)</h2></div>,
           },
           {
             path: 'inventory',
-            element: <div style={{ padding: '2rem', color: 'white' }}><h2>Inventory Page (Placeholder)</h2></div>,
+            element: <Inventory />,
+          },
+          {
+            path: 'categories',
+            element: <Categories />,
           },
           {
             path: 'settings',

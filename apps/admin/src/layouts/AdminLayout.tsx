@@ -3,6 +3,7 @@ import { Outlet } from 'react-router-dom';
 import { Sidebar } from '../components/Sidebar/Sidebar';
 import { Topbar } from '../components/Topbar/Topbar';
 import { TooltipProvider } from '../components/ui/tooltip';
+import { Toaster } from 'react-hot-toast';
 
 export const AdminLayout = () => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
@@ -18,6 +19,7 @@ export const AdminLayout = () => {
 
   return (
     <TooltipProvider>
+      <Toaster position="top-right" />
       <div className="min-h-screen bg-gray-50/50 font-sans">
         
         <Sidebar 
