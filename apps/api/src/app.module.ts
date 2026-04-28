@@ -10,6 +10,7 @@ import { VehiclesModule } from '@/modules/vehicles/vehicles.module';
 import { UsersModule } from '@/modules/users/users.module';
 import { AuthModule } from '@/modules/auth/auth.module';
 import { HealthModule } from '@/modules/health/health.module';
+import { TransactionsModule } from './modules/transactions/transactions.module';
 import configuration from '@/config/configuration';
 
 @Module({
@@ -25,6 +26,7 @@ import configuration from '@/config/configuration';
     UsersModule,
     AuthModule,
     HealthModule,
+    TransactionsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

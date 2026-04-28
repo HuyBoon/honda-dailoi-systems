@@ -8,6 +8,7 @@ import { Categories } from '../pages/Categories';
 import { Inventory } from '../pages/Inventory';
 import { Dashboard } from '../pages/Dashboard';
 import { Vehicles } from '../pages/Vehicles';
+import { Transactions } from '../pages/Transactions';
 import { NotFound } from '../pages/NotFound';
 
 export const router = createBrowserRouter([
@@ -50,6 +51,10 @@ export const router = createBrowserRouter([
           {
             path: 'vehicles',
             element: <Vehicles />,
+          },
+          {
+            path: 'transactions',
+            element: <Transactions />,
           },
           {
             path: 'settings',
