@@ -1,48 +1,47 @@
 import { motion } from 'framer-motion';
 import { useAppSelector } from '../store/hooks';
-import './Dashboard.css';
 
 export const Dashboard = () => {
   const { user } = useAppSelector((state) => state.auth);
 
   return (
     <motion.div 
-      className="dashboard-container"
+      className="p-8 text-white min-h-full"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
     >
-      <header className="dashboard-header">
-        <h1>Welcome back, {user?.name}</h1>
-        <p>Insights and overviews for your business</p>
+      <header className="mb-8">
+        <h1 className="m-0 text-3xl font-bold tracking-tight">Welcome back, {user?.name || user?.email}</h1>
+        <p className="mt-2 text-honda-light/60">Insights and overviews for your business</p>
       </header>
 
-      <div className="dashboard-grid">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <motion.div 
-          className="stat-card glass-card"
+          className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6 shadow-lg hover:border-white/20 transition-colors"
           whileHover={{ y: -5 }}
         >
-          <h3>Total Sales</h3>
-          <p className="stat-value">$12,450</p>
-          <span className="stat-trend positive">+4.5% from last month</span>
+          <h3 className="m-0 mb-4 text-base text-honda-light/60 font-medium">Total Sales</h3>
+          <p className="m-0 mb-2 text-4xl font-bold">$12,450</p>
+          <span className="text-sm font-medium text-green-400">+4.5% from last month</span>
         </motion.div>
         
         <motion.div 
-          className="stat-card glass-card"
+          className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6 shadow-lg hover:border-white/20 transition-colors"
           whileHover={{ y: -5 }}
         >
-          <h3>New Users</h3>
-          <p className="stat-value">1,240</p>
-          <span className="stat-trend positive">+12% from last month</span>
+          <h3 className="m-0 mb-4 text-base text-honda-light/60 font-medium">New Users</h3>
+          <p className="m-0 mb-2 text-4xl font-bold">1,240</p>
+          <span className="text-sm font-medium text-green-400">+12% from last month</span>
         </motion.div>
         
         <motion.div 
-          className="stat-card glass-card"
+          className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6 shadow-lg hover:border-white/20 transition-colors"
           whileHover={{ y: -5 }}
         >
-          <h3>Low Stock Items</h3>
-          <p className="stat-value">24</p>
-          <span className="stat-trend negative">Requires attention</span>
+          <h3 className="m-0 mb-4 text-base text-honda-light/60 font-medium">Low Stock Items</h3>
+          <p className="m-0 mb-2 text-4xl font-bold">24</p>
+          <span className="text-sm font-medium text-red-400">Requires attention</span>
         </motion.div>
       </div>
     </motion.div>
