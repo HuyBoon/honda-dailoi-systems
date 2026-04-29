@@ -1,5 +1,6 @@
 import { apiSlice } from './apiSlice';
 import type { Category } from './categoryApiSlice';
+import type { Vehicle } from './vehicleApiSlice';
 
 export interface Part {
   id: string;
@@ -12,6 +13,8 @@ export interface Part {
   barcode?: string;
   categoryId: string;
   category: Category;
+  vehicles?: Vehicle[];
+  vehicleIds?: string[];
   createdAt: string;
   updatedAt: string;
 }

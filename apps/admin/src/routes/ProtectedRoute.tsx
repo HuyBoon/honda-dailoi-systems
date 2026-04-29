@@ -11,7 +11,6 @@ export const ProtectedRoute = () => {
   }
 
   if (user && !['ADMIN', 'SUPER_ADMIN', 'MANAGER'].includes(user.role)) {
-    // If they aren't an admin variant, logout their token and kick them to login
     dispatch(logout());
     return <Navigate to="/login?error=unauthorized" replace />;
   }

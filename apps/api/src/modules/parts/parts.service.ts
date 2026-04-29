@@ -8,8 +8,17 @@ export class PartsService {
   constructor(private prisma: PrismaService) {}
 
   create(createPartDto: CreatePartDto) {
+    const { vehicleIds, ...partData } = createPartDto;
     return this.prisma.part.create({
-      data: createPartDto,
+      data: {
+        ...partData,
+        ...(vehicleIds && {
+          vehicles: {
+            connect: vehicleIds.map((id) => ({ id })),
+          },
+        }),
+      },
+      include: { category: true, vehicles: true },
     });
   }
 
@@ -26,7 +35,9 @@ export class PartsService {
       },
       include: {
         category: true,
+        vehicles: true,
       },
+      orderBy: { createdAt: 'desc' },
     });
   }
 
@@ -40,9 +51,18 @@ export class PartsService {
   }
 
   update(id: string, updatePartDto: UpdatePartDto) {
+    const { vehicleIds, ...partData } = updatePartDto;
     return this.prisma.part.update({
       where: { id },
-      data: updatePartDto,
+      data: {
+        ...partData,
+        ...(vehicleIds && {
+          vehicles: {
+            set: vehicleIds.map((id) => ({ id })),
+          },
+        }),
+      },
+      include: { category: true, vehicles: true },
     });
   }
 

@@ -9,7 +9,7 @@ import {
 } from '../ui/table';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
-import { User, Role } from '../../store/api/userApiSlice';
+import { type User, Role } from '../../store/api/userApiSlice';
 import { format } from 'date-fns';
 
 interface UserTableProps {

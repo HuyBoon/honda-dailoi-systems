@@ -19,6 +19,8 @@ import {
 import { Loader2 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
+import { useGetVehiclesQuery } from '../../store/api/vehicleApiSlice';
+
 interface PartFormModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -36,6 +38,7 @@ export const PartFormModal = ({
   onSubmit,
   isLoading
 }: PartFormModalProps) => {
+  const { data: vehicles } = useGetVehiclesQuery();
   const [formData, setFormData] = useState({
     partNumber: '',
     name: '',
@@ -43,7 +46,8 @@ export const PartFormModal = ({
     price: 0,
     stockQuantity: 0,
     minStockLevel: 5,
-    categoryId: ''
+    categoryId: '',
+    vehicleIds: [] as string[]
   });
 
   useEffect(() => {
@@ -55,7 +59,8 @@ export const PartFormModal = ({
         price: Number(editingPart.price),
         stockQuantity: editingPart.stockQuantity,
         minStockLevel: editingPart.minStockLevel,
-        categoryId: editingPart.categoryId
+        categoryId: editingPart.categoryId,
+        vehicleIds: editingPart.vehicles?.map((v: any) => v.id) || []
       });
     } else {
       setFormData({
@@ -65,10 +70,22 @@ export const PartFormModal = ({
         price: 0,
         stockQuantity: 0,
         minStockLevel: 5,
-        categoryId: categories?.[0]?.id || ''
+        categoryId: categories?.[0]?.id || '',
+        vehicleIds: []
       });
     }
   }, [editingPart, categories, isOpen]);
+
+  const toggleVehicle = (id: string) => {
+    setFormData(prev => {
+      const isSelected = prev.vehicleIds.includes(id);
+      if (isSelected) {
+        return { ...prev, vehicleIds: prev.vehicleIds.filter(vId => vId !== id) };
+      } else {
+        return { ...prev, vehicleIds: [...prev.vehicleIds, id] };
+      }
+    });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -159,14 +176,43 @@ export const PartFormModal = ({
               </div>
             </div>
 
-            <div className="space-y-2">
-              <Label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Mức tồn kho tối thiểu</Label>
-              <Input 
-                type="number"
-                value={formData.minStockLevel}
-                onChange={e => setFormData({...formData, minStockLevel: Number(e.target.value)})}
-                className="rounded-lg border-gray-200 focus:ring-honda-red/20 focus:border-honda-red"
-              />
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Mức tồn kho tối thiểu</Label>
+                <Input 
+                  type="number"
+                  value={formData.minStockLevel}
+                  onChange={e => setFormData({...formData, minStockLevel: Number(e.target.value)})}
+                  className="rounded-lg border-gray-200 focus:ring-honda-red/20 focus:border-honda-red"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-3 pt-2">
+              <Label className="text-xs font-bold text-gray-500 uppercase tracking-wider block border-b border-gray-100 pb-2 mb-3">Dòng xe tương thích</Label>
+              <div className="grid grid-cols-2 gap-2 max-h-[200px] overflow-y-auto pr-2 custom-scrollbar">
+                {vehicles?.map((vehicle) => (
+                  <label 
+                    key={vehicle.id} 
+                    className={`flex items-center gap-2 p-2 rounded-lg border cursor-pointer transition-all ${
+                      formData.vehicleIds.includes(vehicle.id) 
+                      ? 'border-honda-red bg-red-50 text-honda-red font-semibold' 
+                      : 'border-gray-100 hover:border-gray-200 text-gray-600'
+                    }`}
+                  >
+                    <input 
+                      type="checkbox" 
+                      className="hidden"
+                      checked={formData.vehicleIds.includes(vehicle.id)}
+                      onChange={() => toggleVehicle(vehicle.id)}
+                    />
+                    <span className="text-xs">{vehicle.modelName} ({vehicle.year})</span>
+                  </label>
+                ))}
+              </div>
+              {vehicles?.length === 0 && (
+                <p className="text-xs text-gray-400 italic">Chưa có dòng xe nào trong hệ thống</p>
+              )}
             </div>
           </div>
 

@@ -5,7 +5,7 @@ import { AuthLayout } from '../layouts/AuthLayout';
 import { Login } from '../pages/Login';
 import { Register } from '../pages/Register';
 import { Categories } from '../pages/categories/index';
-import { Inventory } from '../pages/inventory/index';
+import { Inventory } from '@/pages/Inventory';
 import { Dashboard } from '../pages/Dashboard';
 import { Vehicles } from '../pages/vehicles/index';
 import { Transactions } from '../pages/transactions/index';

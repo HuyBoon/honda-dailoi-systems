@@ -4,7 +4,7 @@ import {
   useCreateUserMutation, 
   useUpdateUserMutation, 
   useDeleteUserMutation,
-  User
+  type User
 } from '../../store/api/userApiSlice';
 import { Loader2 } from 'lucide-react';
 import { toast } from 'react-hot-toast';

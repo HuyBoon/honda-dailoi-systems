@@ -17,7 +17,7 @@ import {
   SelectValue 
 } from '../ui/select';
 import { Loader2 } from 'lucide-react';
-import { User, Role } from '../../store/api/userApiSlice';
+import { type User, Role } from '../../store/api/userApiSlice';
 import { toast } from 'react-hot-toast';
 
 interface UserFormModalProps {

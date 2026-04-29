@@ -37,6 +37,7 @@ const MENU_GROUPS = [
     ]
   }
 ];
+
 interface SidebarProps {
   isCollapsed: boolean;
   isMobileOpen: boolean;
@@ -76,10 +77,15 @@ export const Sidebar = ({ isCollapsed, isMobileOpen, setIsMobileOpen }: SidebarP
         transition={{ duration: 0.3, ease: 'easeInOut' }}
         className="fixed inset-y-0 left-0 bg-white border-r border-gray-200 flex flex-col z-[100] overflow-hidden shadow-sm"
       >
-        <div className="h-16 px-5 flex items-center justify-between border-b border-gray-100">
-          <div className="flex items-center gap-3 overflow-hidden whitespace-nowrap">
-            <div className="w-8 h-8 rounded-full bg-red-50 border border-red-200 flex items-center justify-center text-red-600 shrink-0">
-               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        {/* Header Logo */}
+        <div className="h-16 px-5 flex items-center justify-between border-b border-gray-100 relative shrink-0">
+          <div className={`flex items-center gap-3 overflow-hidden whitespace-nowrap transition-all duration-300 ${isCollapsed && !isMobile ? 'justify-center w-full' : ''}`}>
+            <div className={`shrink-0 transition-all duration-300 ${isCollapsed && !isMobile ? 'w-10 h-10' : 'w-9 h-9'}`}>
+              <img 
+                src="/logo.png" 
+                alt="Logo Honda Đại Lợi" 
+                className="w-full h-full object-contain block"
+              />
             </div>
             {(!isCollapsed || isMobile) && (
               <span className="font-bold text-lg tracking-wide text-gray-800 uppercase">Đại Lợi</span>
@@ -93,6 +99,7 @@ export const Sidebar = ({ isCollapsed, isMobileOpen, setIsMobileOpen }: SidebarP
           )}
         </div>
 
+        {/* Menu cuộn */}
         <nav className="flex-1 flex flex-col py-4 overflow-y-auto custom-scrollbar">
           {MENU_GROUPS.map((group, groupIdx) => (
             <div key={groupIdx} className="mb-6">
@@ -127,7 +134,7 @@ export const Sidebar = ({ isCollapsed, isMobileOpen, setIsMobileOpen }: SidebarP
                     <li key={item.path}>
                       {isCollapsed && !isMobile ? (
                         <Tooltip>
-                          <TooltipTrigger className="w-full">
+                          <TooltipTrigger className="w-full focus:outline-none">
                             {navLinkContent}
                           </TooltipTrigger>
                           <TooltipContent side="right" className="bg-gray-800 text-white font-medium text-xs rounded-md px-3 py-2 shadow-lg border border-gray-700 ml-4 z-[150] flex items-center">
@@ -144,6 +151,18 @@ export const Sidebar = ({ isCollapsed, isMobileOpen, setIsMobileOpen }: SidebarP
             </div>
           ))}
         </nav>
+
+        {/* Footer cố định ở dưới */}
+        <div className="p-4 border-t border-gray-100  shrink-0 flex items-center justify-center">
+          <div className={`transition-all duration-300   ${isCollapsed && !isMobile ? 'w-8 h-8' : 'w-40 h-auto'}`}>
+            <img 
+              src="/logo.png" 
+              alt="Footer Logo" 
+              className="w-full h-full object-contain block"
+            />
+          </div>
+        </div>
+
       </motion.aside>
     </>
   );

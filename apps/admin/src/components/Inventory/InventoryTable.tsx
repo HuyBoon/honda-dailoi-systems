@@ -38,6 +38,7 @@ export const InventoryTable = ({ parts, isLoading, onEdit, onDelete }: Inventory
             <TableRow>
               <TableHead className="text-gray-400 font-semibold uppercase text-[11px] tracking-wider px-6">Mã phụ tùng</TableHead>
               <TableHead className="text-gray-400 font-semibold uppercase text-[11px] tracking-wider">Tên phụ tùng</TableHead>
+              <TableHead className="text-gray-400 font-semibold uppercase text-[11px] tracking-wider">Dòng xe</TableHead>
               <TableHead className="text-gray-400 font-semibold uppercase text-[11px] tracking-wider">Danh mục</TableHead>
               <TableHead className="text-gray-400 font-semibold uppercase text-[11px] tracking-wider">Số lượng</TableHead>
               <TableHead className="text-gray-400 font-semibold uppercase text-[11px] tracking-wider">Đơn giá</TableHead>
@@ -58,6 +59,24 @@ export const InventoryTable = ({ parts, isLoading, onEdit, onDelete }: Inventory
                         <span className="font-semibold text-gray-900 line-clamp-1">{part.name}</span>
                         <span className="text-[11px] text-gray-400 line-clamp-1">{part.description || 'Không có mô tả'}</span>
                       </div>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex flex-wrap gap-1 max-w-[200px]">
+                      {part.vehicles && part.vehicles.length > 0 ? (
+                        part.vehicles.slice(0, 3).map((v: any) => (
+                          <Badge key={v.id} variant="secondary" className="bg-gray-100 text-gray-600 border-none text-[9px] h-5 px-1.5">
+                            {v.modelName}
+                          </Badge>
+                        ))
+                      ) : (
+                        <span className="text-[10px] text-gray-400 italic">Chưa gán xe</span>
+                      )}
+                      {part.vehicles && part.vehicles.length > 3 && (
+                        <Badge variant="secondary" className="bg-gray-50 text-gray-400 border-none text-[9px] h-5 px-1.5 italic">
+                          +{part.vehicles.length - 3}
+                        </Badge>
+                      )}
                     </div>
                   </TableCell>
                   <TableCell>
