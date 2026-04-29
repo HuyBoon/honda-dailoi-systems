@@ -4,11 +4,14 @@ import { AdminLayout } from '../layouts/AdminLayout';
 import { AuthLayout } from '../layouts/AuthLayout';
 import { Login } from '../pages/Login';
 import { Register } from '../pages/Register';
-import { Categories } from '../pages/Categories';
+import { Categories } from '../pages/categories/index';
 import { Inventory } from '../pages/inventory/index';
 import { Dashboard } from '../pages/Dashboard';
-import { Vehicles } from '../pages/Vehicles';
-import { Transactions } from '../pages/Transactions';
+import { Vehicles } from '../pages/vehicles/index';
+import { Transactions } from '../pages/transactions/index';
+import { Users } from '../pages/users/index';
+import { Settings } from '../pages/settings/index';
+import { Orders } from '../pages/orders/index';
 import { NotFound } from '../pages/NotFound';
 
 export const router = createBrowserRouter([
@@ -38,7 +41,7 @@ export const router = createBrowserRouter([
           },
           {
             path: 'users',
-            element: <div style={{ padding: '2rem', color: 'white' }}><h2>Staff Page (Placeholder)</h2></div>,
+            element: <Users />,
           },
           {
             path: 'inventory',
@@ -57,8 +60,12 @@ export const router = createBrowserRouter([
             element: <Transactions />,
           },
           {
+            path: 'orders',
+            element: <Orders />,
+          },
+          {
             path: 'settings',
-            element: <div style={{ padding: '2rem', color: 'white' }}><h2>Settings Page (Placeholder)</h2></div>,
+            element: <Settings />,
           },
         ],
       },
