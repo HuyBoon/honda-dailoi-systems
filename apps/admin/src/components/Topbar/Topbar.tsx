@@ -4,12 +4,15 @@ import { useAppSelector, useAppDispatch } from '../../store/hooks';
 import { logout } from '../../store/slices/authSlice';
 import { motion, AnimatePresence } from 'framer-motion';
 
+import { useGetDashboardStatsQuery } from '../../store/api/statsApiSlice';
+
 interface TopbarProps {
   onMenuClick: () => void;
 }
 
 export const Topbar = ({ onMenuClick }: TopbarProps) => {
   const { user } = useAppSelector((state) => state.auth);
+  const { data: stats } = useGetDashboardStatsQuery();
   const dispatch = useAppDispatch();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -53,9 +56,13 @@ export const Topbar = ({ onMenuClick }: TopbarProps) => {
       </div>
 
       <div className="flex items-center gap-2 sm:gap-4">
-        <button className="relative p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-full transition-colors cursor-pointer outline-none">
-          <Bell size={20} />
-          <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-red-600 rounded-full border-2 border-white" />
+        <button className="relative p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-full transition-colors cursor-pointer outline-none group">
+          <Bell size={20} className="group-hover:animate-swing" />
+          {stats?.lowStockCount && stats.lowStockCount > 0 ? (
+            <span className="absolute top-1.5 right-1.5 min-w-[14px] h-[14px] px-1 bg-red-600 rounded-full border-2 border-white text-[8px] font-black text-white flex items-center justify-center">
+              {stats.lowStockCount > 9 ? '9+' : stats.lowStockCount}
+            </span>
+          ) : null}
         </button>
 
         <div className="relative" ref={dropdownRef}>

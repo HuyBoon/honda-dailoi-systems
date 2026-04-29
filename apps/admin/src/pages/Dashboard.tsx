@@ -211,6 +211,36 @@ export const Dashboard = () => {
         </Card>
 
       </div>
+
+      {/* Low Stock Alerts Section */}
+      {(stats?.lowStockParts && stats.lowStockParts.length > 0) && (
+        <div className="mt-8">
+          <div className="flex items-center gap-2 mb-4">
+            <AlertTriangle className="text-red-600 animate-pulse" size={20} />
+            <h2 className="text-lg font-bold text-gray-800 uppercase tracking-tight">Cảnh báo tồn kho thấp</h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {stats.lowStockParts.map((part: any) => (
+              <Card key={part.id} className="border-l-4 border-l-red-600 shadow-sm hover:shadow-md transition-all duration-300">
+                <CardContent className="p-4 flex justify-between items-center">
+                  <div className="flex flex-col gap-1">
+                    <span className="text-[10px] font-bold text-red-600 uppercase tracking-widest">{part.category.name}</span>
+                    <span className="text-sm font-bold text-gray-900 line-clamp-1">{part.name}</span>
+                    <span className="text-[11px] font-mono text-gray-400">{part.partNumber}</span>
+                  </div>
+                  <div className="flex flex-col items-end gap-1">
+                    <div className="flex items-center gap-1.5 text-red-600 bg-red-50 px-2 py-1 rounded-lg">
+                       <span className="text-lg font-black">{part.stockQuantity}</span>
+                       <span className="text-[10px] font-bold uppercase">Còn lại</span>
+                    </div>
+                    <span className="text-[10px] text-gray-400 font-medium">Tối thiểu: {part.minStockLevel}</span>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
