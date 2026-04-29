@@ -7,6 +7,7 @@ export interface DashboardStats {
   lowStockCount: number;
   totalValue: number;
   recentTransactions: any[];
+  lowStockParts: any[];
 }
 
 export const statsApiSlice = apiSlice.injectEndpoints({
