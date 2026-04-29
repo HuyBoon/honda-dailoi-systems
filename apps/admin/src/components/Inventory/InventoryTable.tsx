@@ -8,16 +8,17 @@ import {
 } from '../ui/table';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
-import { Edit2, Trash2, Loader2, Package, AlertTriangle, Barcode } from 'lucide-react';
+import { Edit2, Trash2, Loader2, Package, AlertTriangle, Barcode, History } from 'lucide-react';
 
 interface InventoryTableProps {
   parts: any[];
   isLoading: boolean;
   onEdit: (part: any) => void;
   onDelete: (id: string) => void;
+  onViewHistory: (part: any) => void;
 }
 
-export const InventoryTable = ({ parts, isLoading, onEdit, onDelete }: InventoryTableProps) => {
+export const InventoryTable = ({ parts, isLoading, onEdit, onDelete, onViewHistory }: InventoryTableProps) => {
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
   };
@@ -108,6 +109,9 @@ export const InventoryTable = ({ parts, isLoading, onEdit, onDelete }: Inventory
                   <TableCell className="font-semibold text-gray-900">{formatPrice(Number(part.price))}</TableCell>
                   <TableCell className="text-right px-6">
                     <div className="flex justify-end gap-1">
+                      <Button variant="ghost" size="icon" onClick={() => onViewHistory(part)} className="text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors">
+                        <History size={16} />
+                      </Button>
                       <Button variant="ghost" size="icon" onClick={() => onEdit(part)} className="text-blue-600 hover:bg-blue-50 transition-colors">
                         <Edit2 size={16} />
                       </Button>

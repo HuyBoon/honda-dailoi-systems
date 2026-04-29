@@ -9,6 +9,7 @@ import { useGetCategoriesQuery } from '../../store/api/categoryApiSlice';
 import { PageHeader } from '../../components/PageHeader';
 import { InventoryTable } from '../../components/Inventory/InventoryTable';
 import { PartFormModal } from '../../components/Inventory/PartFormModal';
+import { PartHistoryModal } from '../../components/Inventory/PartHistoryModal';
 import { 
   Select, 
   SelectContent, 
@@ -22,7 +23,9 @@ export const Inventory = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [editingPart, setEditingPart] = useState<any>(null);
+  const [viewingHistoryPart, setViewingHistoryPart] = useState<any>(null);
 
   const { data: categories } = useGetCategoriesQuery();
   const { data: parts, isLoading } = useGetPartsQuery({ 
@@ -42,6 +45,11 @@ export const Inventory = () => {
   const handleOpenEdit = (part: any) => {
     setEditingPart(part);
     setIsModalOpen(true);
+  };
+
+  const handleViewHistory = (part: any) => {
+    setViewingHistoryPart(part);
+    setIsHistoryOpen(true);
   };
 
   const handleFormSubmit = async (formData: any) => {
@@ -100,6 +108,7 @@ export const Inventory = () => {
         isLoading={isLoading}
         onEdit={handleOpenEdit}
         onDelete={handleDelete}
+        onViewHistory={handleViewHistory}
       />
 
       <PartFormModal 
@@ -109,6 +118,12 @@ export const Inventory = () => {
         categories={categories || []}
         onSubmit={handleFormSubmit}
         isLoading={isCreating || isUpdating}
+      />
+
+      <PartHistoryModal 
+        isOpen={isHistoryOpen}
+        onClose={() => setIsHistoryOpen(false)}
+        part={viewingHistoryPart}
       />
     </div>
   );

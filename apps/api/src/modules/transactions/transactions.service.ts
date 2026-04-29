@@ -48,8 +48,11 @@ export class TransactionsService {
     });
   }
 
-  findAll() {
+  findAll(partId?: string) {
     return this.prisma.inventoryTransaction.findMany({
+      where: {
+        ...(partId && { partId }),
+      },
       orderBy: { createdAt: 'desc' },
       include: {
         part: {

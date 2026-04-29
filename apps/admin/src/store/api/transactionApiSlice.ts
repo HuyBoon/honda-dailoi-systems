@@ -22,9 +22,12 @@ export interface Transaction {
 
 export const transactionApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    getTransactions: builder.query<Transaction[], void>({
-      query: () => '/transactions',
-      providesTags: ['Inventory'], // Reuse inventory tag or add 'Transaction'
+    getTransactions: builder.query<Transaction[], string | void>({
+      query: (partId) => ({
+        url: '/transactions',
+        params: partId ? { partId } : undefined,
+      }),
+      providesTags: ['Inventory'],
     }),
     createTransaction: builder.mutation<Transaction, { partId: string; type: TransactionType; quantity: number; notes? : string }>({
       query: (body) => ({

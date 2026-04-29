@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, UseGuards, Query } from '@nestjs/common';
 import { TransactionsService } from './transactions.service';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { JwtAuthGuard } from '@/common/guards/jwt-auth.guard';
@@ -19,7 +19,7 @@ export class TransactionsController {
 
   @Get()
   @Roles(Role.ADMIN, Role.SUPER_ADMIN, Role.MANAGER)
-  findAll() {
-    return this.transactionsService.findAll();
+  findAll(@Query('partId') partId?: string) {
+    return this.transactionsService.findAll(partId);
   }
 }
