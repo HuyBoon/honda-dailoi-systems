@@ -7,8 +7,8 @@ import {
 } from '../../store/api/partApiSlice';
 import { useGetCategoriesQuery } from '../../store/api/categoryApiSlice';
 import { PageHeader } from '../../components/PageHeader';
-import { InventoryTable } from './components/InventoryTable';
-import { PartFormModal } from './components/PartFormModal';
+import { InventoryTable } from '../../components/Inventory/InventoryTable';
+import { PartFormModal } from '../../components/Inventory/PartFormModal';
 import { 
   Select, 
   SelectContent, 

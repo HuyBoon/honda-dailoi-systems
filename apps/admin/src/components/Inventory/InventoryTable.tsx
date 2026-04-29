@@ -5,9 +5,9 @@ import {
   TableHead, 
   TableHeader, 
   TableRow 
-} from '../../../components/ui/table';
-import { Button } from '../../../components/ui/button';
-import { Badge } from '../../../components/ui/badge';
+} from '../ui/table';
+import { Button } from '../ui/button';
+import { Badge } from '../ui/badge';
 import { Edit2, Trash2, Loader2, Package, AlertTriangle } from 'lucide-react';
 
 interface InventoryTableProps {

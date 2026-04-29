@@ -5,17 +5,17 @@ import {
   DialogHeader, 
   DialogTitle, 
   DialogFooter 
-} from '../../../components/ui/dialog';
-import { Button } from '../../../components/ui/button';
-import { Input } from '../../../components/ui/input';
-import { Label } from '../../../components/ui/label';
+} from '../ui/dialog';
+import { Button } from '../ui/button';
+import { Input } from '../ui/input';
+import { Label } from '../ui/label';
 import { 
   Select, 
   SelectContent, 
   SelectItem, 
   SelectTrigger, 
   SelectValue 
-} from '../../../components/ui/select';
+} from '../ui/select';
 import { Loader2 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
