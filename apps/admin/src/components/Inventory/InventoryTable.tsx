@@ -8,7 +8,7 @@ import {
 } from '../ui/table';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
-import { Edit2, Trash2, Loader2, Package, AlertTriangle } from 'lucide-react';
+import { Edit2, Trash2, Loader2, Package, AlertTriangle, Barcode } from 'lucide-react';
 
 interface InventoryTableProps {
   parts: any[];
@@ -49,7 +49,15 @@ export const InventoryTable = ({ parts, isLoading, onEdit, onDelete }: Inventory
             {parts && parts.length > 0 ? (
               parts.map((part) => (
                 <TableRow key={part.id} className="hover:bg-gray-50/50 transition-colors">
-                  <TableCell className="px-6 font-mono text-xs font-bold text-gray-500">{part.partNumber}</TableCell>
+                  <TableCell className="px-6 flex flex-col gap-1">
+                    <span className="font-mono text-xs font-bold text-gray-500">{part.partNumber}</span>
+                    {part.barcode && (
+                      <div className="flex items-center gap-1 text-[9px] text-gray-400">
+                        <Barcode size={10} />
+                        <span>{part.barcode}</span>
+                      </div>
+                    )}
+                  </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-3">
                       <div className="w-9 h-9 rounded-xl bg-gray-50 flex items-center justify-center text-gray-400 shrink-0">

@@ -46,6 +46,7 @@ export const PartFormModal = ({
     price: 0,
     stockQuantity: 0,
     minStockLevel: 5,
+    barcode: '',
     categoryId: '',
     vehicleIds: [] as string[]
   });
@@ -59,6 +60,7 @@ export const PartFormModal = ({
         price: Number(editingPart.price),
         stockQuantity: editingPart.stockQuantity,
         minStockLevel: editingPart.minStockLevel,
+        barcode: editingPart.barcode || '',
         categoryId: editingPart.categoryId,
         vehicleIds: editingPart.vehicles?.map((v: any) => v.id) || []
       });
@@ -70,6 +72,7 @@ export const PartFormModal = ({
         price: 0,
         stockQuantity: 0,
         minStockLevel: 5,
+        barcode: '',
         categoryId: categories?.[0]?.id || '',
         vehicleIds: []
       });
@@ -183,6 +186,15 @@ export const PartFormModal = ({
                   type="number"
                   value={formData.minStockLevel}
                   onChange={e => setFormData({...formData, minStockLevel: Number(e.target.value)})}
+                  className="rounded-lg border-gray-200 focus:ring-honda-red/20 focus:border-honda-red"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Mã vạch (Barcode)</Label>
+                <Input 
+                  placeholder="Quét hoặc nhập mã vạch" 
+                  value={formData.barcode}
+                  onChange={e => setFormData({...formData, barcode: e.target.value})}
                   className="rounded-lg border-gray-200 focus:ring-honda-red/20 focus:border-honda-red"
                 />
               </div>

@@ -30,6 +30,7 @@ export class PartsService {
           OR: [
             { name: { contains: query, mode: 'insensitive' } },
             { partNumber: { contains: query, mode: 'insensitive' } },
+            { barcode: { contains: query, mode: 'insensitive' } },
           ],
         }),
       },
