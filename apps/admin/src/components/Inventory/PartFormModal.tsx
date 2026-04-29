@@ -21,6 +21,10 @@ import { toast } from 'react-hot-toast';
 
 import { useGetVehiclesQuery } from '../../store/api/vehicleApiSlice';
 
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
+import { ImageIcon } from 'lucide-react';
+
 interface PartFormModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -43,6 +47,7 @@ export const PartFormModal = ({
     partNumber: '',
     name: '',
     description: '',
+    imageUrl: '',
     price: 0,
     stockQuantity: 0,
     minStockLevel: 5,
@@ -57,6 +62,7 @@ export const PartFormModal = ({
         partNumber: editingPart.partNumber,
         name: editingPart.name,
         description: editingPart.description || '',
+        imageUrl: editingPart.imageUrl || '',
         price: Number(editingPart.price),
         stockQuantity: editingPart.stockQuantity,
         minStockLevel: editingPart.minStockLevel,
@@ -69,6 +75,7 @@ export const PartFormModal = ({
         partNumber: '',
         name: '',
         description: '',
+        imageUrl: '',
         price: 0,
         stockQuantity: 0,
         minStockLevel: 5,
@@ -99,42 +106,75 @@ export const PartFormModal = ({
     await onSubmit(formData);
   };
 
+  const quillModules = {
+    toolbar: [
+      [{ 'header': [1, 2, false] }],
+      ['bold', 'italic', 'underline', 'strike', 'blockquote'],
+      [{ 'list': 'ordered' }, { 'list': 'bullet' }, { 'indent': '-1' }, { 'indent': '+1' }],
+      ['clean']
+    ],
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[500px] rounded-2xl bg-white p-0 overflow-hidden border-none shadow-2xl">
-        <form onSubmit={handleSubmit}>
-          <DialogHeader className="p-6 pb-2">
+      <DialogContent className="sm:max-w-[700px] rounded-2xl bg-white p-0 overflow-hidden border-none shadow-2xl flex flex-col max-h-[90vh]">
+        <form onSubmit={handleSubmit} className="flex flex-col h-full">
+          <DialogHeader className="p-6 pb-2 shrink-0">
             <DialogTitle className="text-xl font-bold text-gray-900">
               {editingPart ? 'Cập nhật phụ tùng' : 'Thêm phụ tùng mới'}
             </DialogTitle>
           </DialogHeader>
           
-          <div className="p-6 space-y-4 max-h-[60vh] overflow-y-auto custom-scrollbar">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Mã phụ tùng *</Label>
-                <Input 
-                  placeholder="VD: 12345-ABC-000" 
-                  value={formData.partNumber}
-                  onChange={e => setFormData({...formData, partNumber: e.target.value})}
-                  className="rounded-lg border-gray-200 focus:ring-honda-red/20 focus:border-honda-red font-mono"
-                />
+          <div className="p-6 space-y-5 overflow-y-auto custom-scrollbar flex-1">
+            <div className="grid grid-cols-2 gap-5">
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Mã phụ tùng *</Label>
+                  <Input 
+                    placeholder="VD: 12345-ABC-000" 
+                    value={formData.partNumber}
+                    onChange={e => setFormData({...formData, partNumber: e.target.value})}
+                    className="rounded-lg border-gray-200 focus:ring-honda-red/20 focus:border-honda-red font-mono"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Danh mục *</Label>
+                  <Select 
+                    value={formData.categoryId} 
+                    onValueChange={val => setFormData({...formData, categoryId: val})}
+                  >
+                    <SelectTrigger className="rounded-lg border-gray-200">
+                      <SelectValue placeholder="Chọn danh mục" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-white border-gray-100">
+                      {categories?.map(cat => (
+                        <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
+
               <div className="space-y-2">
-                <Label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Danh mục *</Label>
-                <Select 
-                  value={formData.categoryId} 
-                  onValueChange={val => setFormData({...formData, categoryId: val})}
-                >
-                  <SelectTrigger className="rounded-lg border-gray-200">
-                    <SelectValue placeholder="Chọn danh mục" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-white border-gray-100">
-                    {categories?.map(cat => (
-                      <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Hình ảnh (URL)</Label>
+                <div className="flex gap-3">
+                  <div className="w-24 h-24 rounded-xl border border-dashed border-gray-200 flex items-center justify-center bg-gray-50 shrink-0 overflow-hidden group relative">
+                    {formData.imageUrl ? (
+                      <img src={formData.imageUrl} alt="Preview" className="w-full h-full object-cover" />
+                    ) : (
+                      <ImageIcon className="text-gray-300" size={24} />
+                    )}
+                  </div>
+                  <div className="flex-1 space-y-2">
+                    <Input 
+                      placeholder="https://example.com/image.jpg" 
+                      value={formData.imageUrl}
+                      onChange={e => setFormData({...formData, imageUrl: e.target.value})}
+                      className="rounded-lg border-gray-200 focus:ring-honda-red/20 focus:border-honda-red text-xs"
+                    />
+                    <p className="text-[10px] text-gray-400">Nhập đường dẫn hình ảnh của phụ tùng</p>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -148,14 +188,17 @@ export const PartFormModal = ({
               />
             </div>
 
-            <div className="space-y-2">
-              <Label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Mô tả</Label>
-              <Input 
-                placeholder="Nhập mô tả..." 
-                value={formData.description}
-                onChange={e => setFormData({...formData, description: e.target.value})}
-                className="rounded-lg border-gray-200 focus:ring-honda-red/20 focus:border-honda-red"
-              />
+            <div className="space-y-2 flex flex-col">
+              <Label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Mô tả chi tiết</Label>
+              <div className="rich-text-editor">
+                <ReactQuill 
+                  theme="snow"
+                  value={formData.description}
+                  onChange={val => setFormData({...formData, description: val})}
+                  modules={quillModules}
+                  className="rounded-lg overflow-hidden border border-gray-200"
+                />
+              </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
@@ -202,7 +245,7 @@ export const PartFormModal = ({
 
             <div className="space-y-3 pt-2">
               <Label className="text-xs font-bold text-gray-500 uppercase tracking-wider block border-b border-gray-100 pb-2 mb-3">Dòng xe tương thích</Label>
-              <div className="grid grid-cols-2 gap-2 max-h-[200px] overflow-y-auto pr-2 custom-scrollbar">
+              <div className="grid grid-cols-2 gap-2 max-h-[150px] overflow-y-auto pr-2 custom-scrollbar">
                 {vehicles?.map((vehicle) => (
                   <label 
                     key={vehicle.id} 
@@ -222,13 +265,10 @@ export const PartFormModal = ({
                   </label>
                 ))}
               </div>
-              {vehicles?.length === 0 && (
-                <p className="text-xs text-gray-400 italic">Chưa có dòng xe nào trong hệ thống</p>
-              )}
             </div>
           </div>
 
-          <DialogFooter className="p-6 bg-gray-50/50 border-t border-gray-100 flex flex-row gap-3">
+          <DialogFooter className="p-6 bg-gray-50/50 border-t border-gray-100 flex flex-row gap-3 shrink-0">
             <Button type="button" variant="ghost" onClick={onClose} className="flex-1 rounded-lg text-gray-600 hover:bg-gray-100 h-11 transition-all">
               Hủy
             </Button>

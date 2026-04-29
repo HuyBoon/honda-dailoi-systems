@@ -61,12 +61,19 @@ export const InventoryTable = ({ parts, isLoading, onEdit, onDelete, onViewHisto
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-xl bg-gray-50 flex items-center justify-center text-gray-400 shrink-0">
-                        <Package size={18} />
+                      <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-gray-400 shrink-0 overflow-hidden border border-gray-100">
+                        {part.imageUrl ? (
+                          <img src={part.imageUrl} alt={part.name} className="w-full h-full object-cover" />
+                        ) : (
+                          <Package size={18} />
+                        )}
                       </div>
                       <div className="flex flex-col">
                         <span className="font-semibold text-gray-900 line-clamp-1">{part.name}</span>
-                        <span className="text-[11px] text-gray-400 line-clamp-1">{part.description || 'Không có mô tả'}</span>
+                        <div 
+                          className="text-[11px] text-gray-400 line-clamp-1 prose prose-sm max-w-none"
+                          dangerouslySetInnerHTML={{ __html: part.description || 'Không có mô tả' }}
+                        />
                       </div>
                     </div>
                   </TableCell>

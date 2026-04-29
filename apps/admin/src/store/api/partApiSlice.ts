@@ -7,6 +7,7 @@ export interface Part {
   partNumber: string;
   name: string;
   description?: string;
+  imageUrl?: string;
   price: number;
   stockQuantity: number;
   minStockLevel: number;

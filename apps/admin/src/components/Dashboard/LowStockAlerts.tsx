@@ -17,13 +17,22 @@ export const LowStockAlerts = ({ lowStockParts }: LowStockAlertsProps) => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {lowStockParts.map((part) => (
           <Card key={part.id} className="border-l-4 border-l-red-600 shadow-sm hover:shadow-md transition-all duration-300">
-            <CardContent className="p-4 flex justify-between items-center">
-              <div className="flex flex-col gap-1">
-                <span className="text-[10px] font-bold text-red-600 uppercase tracking-widest">{part.category?.name}</span>
-                <span className="text-sm font-bold text-gray-900 line-clamp-1">{part.name}</span>
-                <span className="text-[11px] font-mono text-gray-400">{part.partNumber}</span>
+            <CardContent className="p-4 flex items-center justify-between gap-4">
+              <div className="flex items-center gap-3 flex-1 overflow-hidden">
+                <div className="w-12 h-12 rounded-lg bg-gray-50 flex items-center justify-center text-gray-300 shrink-0 overflow-hidden border border-gray-100">
+                  {part.imageUrl ? (
+                    <img src={part.imageUrl} alt={part.name} className="w-full h-full object-cover" />
+                  ) : (
+                    <span className="text-[10px] font-bold">IMG</span>
+                  )}
+                </div>
+                <div className="flex flex-col gap-0.5 overflow-hidden">
+                  <span className="text-[9px] font-bold text-red-600 uppercase tracking-widest">{part.category?.name}</span>
+                  <span className="text-sm font-bold text-gray-900 line-clamp-1">{part.name}</span>
+                  <span className="text-[10px] font-mono text-gray-400">{part.partNumber}</span>
+                </div>
               </div>
-              <div className="flex flex-col items-end gap-1">
+              <div className="flex flex-col items-end gap-1 shrink-0">
                 <div className="flex items-center gap-1.5 text-red-600 bg-red-50 px-2 py-1 rounded-lg">
                    <span className="text-lg font-black">{part.stockQuantity}</span>
                    <span className="text-[10px] font-bold uppercase">Còn lại</span>
