@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { 
   Dialog, 
   DialogContent, 
@@ -16,14 +16,17 @@ import {
   SelectTrigger, 
   SelectValue 
 } from '../ui/select';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Upload, X } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
 import { useGetVehiclesQuery } from '../../store/api/vehicleApiSlice';
+import { useUploadThumbnailMutation } from '../../store/api/uploadApiSlice';
 
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import { ImageIcon } from 'lucide-react';
+
+const API_BASE_URL = 'http://localhost:3000';
 
 interface PartFormModalProps {
   isOpen: boolean;
@@ -43,6 +46,9 @@ export const PartFormModal = ({
   isLoading
 }: PartFormModalProps) => {
   const { data: vehicles } = useGetVehiclesQuery();
+  const [uploadThumbnail, { isLoading: isUploading }] = useUploadThumbnailMutation();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const [formData, setFormData] = useState({
     partNumber: '',
     name: '',
@@ -86,6 +92,32 @@ export const PartFormModal = ({
     }
   }, [editingPart, categories, isOpen]);
 
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file size < 2MB
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error('Kích thước ảnh phải nhỏ hơn 2MB');
+      return;
+    }
+
+    try {
+      const result = await uploadThumbnail(file).unwrap();
+      setFormData({ ...formData, imageUrl: result.url });
+      toast.success('Tải ảnh lên thành công');
+    } catch (err) {
+      toast.error('Không thể tải ảnh lên, vui lòng thử lại');
+    }
+  };
+
+  const removeImage = () => {
+    setFormData({ ...formData, imageUrl: '' });
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
   const toggleVehicle = (id: string) => {
     setFormData(prev => {
       const isSelected = prev.vehicleIds.includes(id);
@@ -104,6 +136,12 @@ export const PartFormModal = ({
       return;
     }
     await onSubmit(formData);
+  };
+
+  const getImageUrl = (url: string) => {
+    if (!url) return '';
+    if (url.startsWith('http')) return url;
+    return `${API_BASE_URL}${url}`;
   };
 
   return (
@@ -147,25 +185,45 @@ export const PartFormModal = ({
               </div>
 
               <div className="space-y-2">
-                <Label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Hình ảnh (URL)</Label>
+                <Label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Hình ảnh phụ tùng</Label>
                 <div className="flex gap-4">
                   <div className="w-28 h-28 rounded-2xl border border-dashed border-gray-200 flex items-center justify-center bg-gray-50 shrink-0 overflow-hidden group relative transition-all hover:border-red-200 hover:bg-red-50">
                     {formData.imageUrl ? (
-                      <img src={formData.imageUrl} alt="Preview" className="w-full h-full object-cover" />
+                      <>
+                        <img src={getImageUrl(formData.imageUrl)} alt="Preview" className="w-full h-full object-cover" />
+                        <button 
+                          type="button" 
+                          onClick={removeImage}
+                          className="absolute top-1 right-1 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
+                        >
+                          <X size={14} />
+                        </button>
+                      </>
                     ) : (
                       <ImageIcon className="text-gray-300" size={32} />
                     )}
                   </div>
                   <div className="flex-1 space-y-3">
-                    <Input 
-                      placeholder="https://example.com/image.jpg" 
-                      value={formData.imageUrl}
-                      onChange={e => setFormData({...formData, imageUrl: e.target.value})}
-                      className="rounded-lg border-gray-200 focus:ring-honda-red/20 focus:border-honda-red text-xs h-11"
+                    <input 
+                      type="file" 
+                      ref={fileInputRef}
+                      onChange={handleFileChange}
+                      className="hidden" 
+                      accept="image/*"
                     />
+                    <Button 
+                      type="button"
+                      variant="outline"
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={isUploading}
+                      className="w-full h-11 rounded-xl border-gray-200 text-gray-600 hover:bg-gray-50 flex gap-2"
+                    >
+                      {isUploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload size={16} />}
+                      {formData.imageUrl ? 'Thay đổi ảnh' : 'Tải ảnh lên'}
+                    </Button>
                     <div className="p-3 bg-blue-50/50 rounded-xl border border-blue-100">
                       <p className="text-[10px] text-blue-600 leading-relaxed">
-                        <strong>Mẹo:</strong> Sử dụng đường dẫn trực tiếp (kết thúc bằng .jpg, .png) để hình ảnh hiển thị đẹp nhất trên danh sách và dashboard.
+                        <strong>Yêu cầu:</strong> Ảnh định dạng JPG, PNG hoặc WebP. Dung lượng tối đa 2MB. Ảnh sẽ được tự động tối ưu hóa.
                       </p>
                     </div>
                   </div>

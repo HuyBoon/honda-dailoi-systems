@@ -10,8 +10,11 @@ import { VehiclesModule } from '@/modules/vehicles/vehicles.module';
 import { UsersModule } from '@/modules/users/users.module';
 import { AuthModule } from '@/modules/auth/auth.module';
 import { HealthModule } from '@/modules/health/health.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 import { TransactionsModule } from './modules/transactions/transactions.module';
 import { StatsModule } from './modules/stats/stats.module';
+import { UploadModule } from './modules/upload/upload.module';
 import configuration from '@/config/configuration';
 
 @Module({
@@ -19,6 +22,10 @@ import configuration from '@/config/configuration';
     ConfigModule.forRoot({
       isGlobal: true,
       load: [configuration],
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: join(process.cwd(), 'uploads'),
+      serveRoot: '/uploads',
     }),
     CategoriesModule,
     PrismaModule,
@@ -29,6 +36,7 @@ import configuration from '@/config/configuration';
     HealthModule,
     TransactionsModule,
     StatsModule,
+    UploadModule,
   ],
   controllers: [AppController],
   providers: [AppService],

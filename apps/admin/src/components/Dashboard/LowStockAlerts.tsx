@@ -5,7 +5,15 @@ interface LowStockAlertsProps {
   lowStockParts: any[];
 }
 
+const API_BASE_URL = 'http://localhost:3000';
+
 export const LowStockAlerts = ({ lowStockParts }: LowStockAlertsProps) => {
+  const getImageUrl = (url: string) => {
+    if (!url) return '';
+    if (url.startsWith('http')) return url;
+    return `${API_BASE_URL}${url}`;
+  };
+
   if (!lowStockParts || lowStockParts.length === 0) return null;
 
   return (
@@ -21,7 +29,7 @@ export const LowStockAlerts = ({ lowStockParts }: LowStockAlertsProps) => {
               <div className="flex items-center gap-3 flex-1 overflow-hidden">
                 <div className="w-12 h-12 rounded-lg bg-gray-50 flex items-center justify-center text-gray-300 shrink-0 overflow-hidden border border-gray-100">
                   {part.imageUrl ? (
-                    <img src={part.imageUrl} alt={part.name} className="w-full h-full object-cover" />
+                    <img src={getImageUrl(part.imageUrl)} alt={part.name} className="w-full h-full object-cover" />
                   ) : (
                     <span className="text-[10px] font-bold">IMG</span>
                   )}

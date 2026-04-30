@@ -18,9 +18,17 @@ interface InventoryTableProps {
   onViewHistory: (part: any) => void;
 }
 
+const API_BASE_URL = 'http://localhost:3000';
+
 export const InventoryTable = ({ parts, isLoading, onEdit, onDelete, onViewHistory }: InventoryTableProps) => {
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
+  };
+
+  const getImageUrl = (url: string) => {
+    if (!url) return '';
+    if (url.startsWith('http')) return url;
+    return `${API_BASE_URL}${url}`;
   };
 
   if (isLoading) {
@@ -63,7 +71,7 @@ export const InventoryTable = ({ parts, isLoading, onEdit, onDelete, onViewHisto
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-gray-400 shrink-0 overflow-hidden border border-gray-100">
                         {part.imageUrl ? (
-                          <img src={part.imageUrl} alt={part.name} className="w-full h-full object-cover" />
+                          <img src={getImageUrl(part.imageUrl)} alt={part.name} className="w-full h-full object-cover" />
                         ) : (
                           <Package size={18} />
                         )}
@@ -97,7 +105,7 @@ export const InventoryTable = ({ parts, isLoading, onEdit, onDelete, onViewHisto
                   </TableCell>
                   <TableCell>
                     <Badge variant="outline" className="rounded-full bg-blue-50 text-blue-600 border-blue-100 font-medium h-6 text-[10px]">
-                      {part.category.name}
+                      {part.category?.name || 'Không có danh mục'}
                     </Badge>
                   </TableCell>
                   <TableCell>
