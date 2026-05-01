@@ -15,6 +15,7 @@ enum TransactionType {
 enum Role {
   USER
   ADMIN
+  SUPER_ADMIN
   MANAGER
 }
 
@@ -68,6 +69,7 @@ model Part {
   stockQuantity Int      @default(0)
   minStockLevel Int      @default(5) // Threshold for low-stock alerts
   barcode       String?  @unique     // For quick scanning at the counter
+  imageUrl      String?  // Thumbnail image URL
 
   // One-to-Many relation: A category has many parts
   categoryId    String

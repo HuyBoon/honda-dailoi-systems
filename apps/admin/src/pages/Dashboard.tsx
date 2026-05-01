@@ -1,50 +1,63 @@
-import { motion } from 'framer-motion';
-import { useAppSelector } from '../store/hooks';
-import './Dashboard.css';
+import { Home } from 'lucide-react';
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "../components/ui/breadcrumb";
+import { useGetDashboardStatsQuery } from '../store/api/statsApiSlice';
+import { StatsCards } from '../components/Dashboard/StatsCards';
+import { RecentTransactions } from '../components/Dashboard/RecentTransactions';
+import { InventoryChart } from '../components/Dashboard/InventoryChart';
+import { LowStockAlerts } from '../components/Dashboard/LowStockAlerts';
 
 export const Dashboard = () => {
-  const { user } = useAppSelector((state) => state.auth);
+  const { data: stats, isLoading } = useGetDashboardStatsQuery();
+
+  if (isLoading) {
+    return (
+      <div className="p-8 flex items-center justify-center min-h-[60vh]">
+        <div className="w-12 h-12 border-4 border-red-600 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
 
   return (
-    <motion.div 
-      className="dashboard-container"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-    >
-      <header className="dashboard-header">
-        <h1>Welcome back, {user?.name}</h1>
-        <p>Insights and overviews for your business</p>
-      </header>
-
-      <div className="dashboard-grid">
-        <motion.div 
-          className="stat-card glass-card"
-          whileHover={{ y: -5 }}
-        >
-          <h3>Total Sales</h3>
-          <p className="stat-value">$12,450</p>
-          <span className="stat-trend positive">+4.5% from last month</span>
-        </motion.div>
-        
-        <motion.div 
-          className="stat-card glass-card"
-          whileHover={{ y: -5 }}
-        >
-          <h3>New Users</h3>
-          <p className="stat-value">1,240</p>
-          <span className="stat-trend positive">+12% from last month</span>
-        </motion.div>
-        
-        <motion.div 
-          className="stat-card glass-card"
-          whileHover={{ y: -5 }}
-        >
-          <h3>Low Stock Items</h3>
-          <p className="stat-value">24</p>
-          <span className="stat-trend negative">Requires attention</span>
-        </motion.div>
+    <div className="p-6 md:p-8 max-w-[1600px] mx-auto w-full">
+      {/* Page Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
+        <div className="flex items-center gap-4">
+          <span className="text-gray-900 font-bold text-2xl">Bảng thống kê</span>
+          <div className="h-6 w-px bg-gray-200 hidden sm:block"></div>
+          <Breadcrumb className="hidden sm:flex">
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink href="/" className="flex items-center gap-1.5"><Home size={14} /> Trang chủ</BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage>Thống kê chung</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+        </div>
       </div>
-    </motion.div>
+
+      {/* Top 4 Metrics Cards */}
+      <StatsCards stats={stats} />
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Recent Transactions List */}
+        <RecentTransactions transactions={stats?.recentTransactions || []} />
+
+        {/* Total Earning Area Chart */}
+        <InventoryChart />
+      </div>
+
+      {/* Low Stock Alerts Section */}
+      <LowStockAlerts lowStockParts={stats?.lowStockParts || []} />
+    </div>
   );
 };

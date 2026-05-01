@@ -1,0 +1,46 @@
+import { apiSlice } from './apiSlice';
+
+export type TransactionType = 'IMPORT' | 'EXPORT';
+
+export const TransactionType = {
+  IMPORT: 'IMPORT' as TransactionType,
+  EXPORT: 'EXPORT' as TransactionType,
+};
+
+export interface Transaction {
+  id: string;
+  type: TransactionType;
+  quantity: number;
+  notes?: string;
+  partId: string;
+  part: {
+    name: string;
+    partNumber: string;
+  };
+  createdAt: string;
+}
+
+export const transactionApiSlice = apiSlice.injectEndpoints({
+  endpoints: (builder) => ({
+    getTransactions: builder.query<Transaction[], string | void>({
+      query: (partId) => ({
+        url: '/transactions',
+        params: partId ? { partId } : undefined,
+      }),
+      providesTags: ['Inventory'],
+    }),
+    createTransaction: builder.mutation<Transaction, { partId: string; type: TransactionType; quantity: number; notes? : string }>({
+      query: (body) => ({
+        url: '/transactions',
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: ['Inventory', 'Part', 'Dashboard'], // Invalidate parts so stock reflects accurately
+    }),
+  }),
+});
+
+export const {
+  useGetTransactionsQuery,
+  useCreateTransactionMutation,
+} = transactionApiSlice;

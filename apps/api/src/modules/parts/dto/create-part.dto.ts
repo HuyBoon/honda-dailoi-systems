@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, IsOptional, IsNumber, Min } from 'class-validator';
+import { IsString, IsNotEmpty, IsOptional, IsNumber, Min, IsArray, IsUrl } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreatePartDto {
@@ -16,6 +16,11 @@ export class CreatePartDto {
   @IsString()
   @IsOptional()
   description?: string;
+
+  @ApiPropertyOptional({ description: 'Thumbnail image URL' })
+  @IsUrl()
+  @IsOptional()
+  imageUrl?: string;
 
   @ApiProperty({ example: 45000, description: 'Price in local currency' })
   @IsNumber()
@@ -43,4 +48,10 @@ export class CreatePartDto {
   @IsString()
   @IsNotEmpty()
   categoryId: string;
+
+  @ApiPropertyOptional({ type: [String], description: 'List of compatible vehicle IDs' })
+  @IsArray()
+  @IsString({ each: true })
+  @IsOptional()
+  vehicleIds?: string[];
 }

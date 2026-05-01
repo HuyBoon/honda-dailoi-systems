@@ -1,13 +1,32 @@
 import { createBrowserRouter } from 'react-router-dom';
 import { ProtectedRoute } from './ProtectedRoute';
 import { AdminLayout } from '../layouts/AdminLayout';
+import { AuthLayout } from '../layouts/AuthLayout';
 import { Login } from '../pages/Login';
+import { Register } from '../pages/Register';
+import { Categories } from '../pages/categories/index';
+import { Inventory } from '@/pages/Inventory';
 import { Dashboard } from '../pages/Dashboard';
+import { Vehicles } from '../pages/vehicles/index';
+import { Transactions } from '../pages/transactions/index';
+import { Users } from '../pages/users/index';
+import { Settings } from '../pages/settings/index';
+import { Orders } from '../pages/orders/index';
+import { NotFound } from '../pages/NotFound';
 
 export const router = createBrowserRouter([
   {
-    path: '/login',
-    element: <Login />,
+    element: <AuthLayout />,
+    children: [
+      {
+        path: '/login',
+        element: <Login />,
+      },
+      {
+        path: '/register',
+        element: <Register />,
+      },
+    ]
   },
   {
     path: '/',
@@ -22,18 +41,38 @@ export const router = createBrowserRouter([
           },
           {
             path: 'users',
-            element: <div style={{ padding: '2rem', color: 'white' }}><h2>Users Page (Placeholder)</h2></div>,
+            element: <Users />,
           },
           {
             path: 'inventory',
-            element: <div style={{ padding: '2rem', color: 'white' }}><h2>Inventory Page (Placeholder)</h2></div>,
+            element: <Inventory />,
+          },
+          {
+            path: 'categories',
+            element: <Categories />,
+          },
+          {
+            path: 'vehicles',
+            element: <Vehicles />,
+          },
+          {
+            path: 'transactions',
+            element: <Transactions />,
+          },
+          {
+            path: 'orders',
+            element: <Orders />,
           },
           {
             path: 'settings',
-            element: <div style={{ padding: '2rem', color: 'white' }}><h2>Settings Page (Placeholder)</h2></div>,
+            element: <Settings />,
           },
         ],
       },
     ],
   },
+  {
+    path: '*',
+    element: <NotFound />,
+  }
 ]);

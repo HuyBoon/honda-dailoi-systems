@@ -1,11 +1,18 @@
 import { Navigate, Outlet } from 'react-router-dom';
-import { useAppSelector } from '../store/hooks';
+import { useAppSelector, useAppDispatch } from '../store/hooks';
+import { logout } from '../store/slices/authSlice';
 
 export const ProtectedRoute = () => {
-  const { isAuthenticated } = useAppSelector((state) => state.auth);
+  const { isAuthenticated, user } = useAppSelector((state) => state.auth);
+  const dispatch = useAppDispatch();
 
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
+  }
+
+  if (user && !['ADMIN', 'SUPER_ADMIN', 'MANAGER'].includes(user.role)) {
+    dispatch(logout());
+    return <Navigate to="/login?error=unauthorized" replace />;
   }
 
   return <Outlet />;
