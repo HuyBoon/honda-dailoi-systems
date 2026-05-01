@@ -71,10 +71,22 @@ export async function getPartById(id: string) {
     imageUrl: formatImageUrl(part.imageUrl),
   };
 }
+export async function createMoMoPayment(data: { orderId: string; amount: number; orderInfo: string }) {
+  const res = await fetch(`${API_URL}/payments/momo/create`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+
+  if (!res.ok) throw new Error('Failed to create MoMo payment');
+  return res.json();
+}
+
 export async function createOrder(orderData: {
   customerName: string;
   customerPhone: string;
   address?: string;
+  paymentMethod?: string;
   items: { partId: string; quantity: number; price: number }[];
 }) {
   const res = await fetch(`${API_URL}/orders`, {

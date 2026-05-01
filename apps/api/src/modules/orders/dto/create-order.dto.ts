@@ -8,6 +8,18 @@ export enum OrderStatus {
   CANCELLED = 'CANCELLED',
 }
 
+export enum PaymentMethod {
+  COD = 'COD',
+  MOMO = 'MOMO',
+}
+
+export enum PaymentStatus {
+  PENDING = 'PENDING',
+  PAID = 'PAID',
+  FAILED = 'FAILED',
+  REFUNDED = 'REFUNDED',
+}
+
 class OrderItemDto {
   @ApiProperty()
   @IsString()
@@ -34,7 +46,7 @@ export class CreateOrderDto {
   @ApiProperty({ required: false })
   @IsString()
   @IsOptional()
-  customerName?: string; // For creating customer on the fly
+  customerName?: string; 
 
   @ApiProperty({ required: false })
   @IsString()
@@ -45,6 +57,16 @@ export class CreateOrderDto {
   @IsString()
   @IsOptional()
   address?: string;
+
+  @ApiProperty({ required: false, enum: PaymentMethod })
+  @IsEnum(PaymentMethod)
+  @IsOptional()
+  paymentMethod?: PaymentMethod;
+
+  @ApiProperty({ required: false, enum: PaymentStatus })
+  @IsEnum(PaymentStatus)
+  @IsOptional()
+  paymentStatus?: PaymentStatus;
 
   @ApiProperty({ required: false })
   @IsString()

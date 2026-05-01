@@ -16,6 +16,7 @@ import { TransactionsModule } from './modules/transactions/transactions.module';
 import { StatsModule } from './modules/stats/stats.module';
 import { UploadModule } from './modules/upload/upload.module';
 import { OrdersModule } from '@/modules/orders/orders.module';
+import { PaymentsModule } from './modules/payments/payments.module';
 import configuration from '@/config/configuration';
 
 @Module({
@@ -39,6 +40,7 @@ import configuration from '@/config/configuration';
     StatsModule,
     UploadModule,
     OrdersModule,
+    PaymentsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

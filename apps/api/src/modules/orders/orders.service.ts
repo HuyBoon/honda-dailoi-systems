@@ -64,6 +64,8 @@ export class OrdersService {
           totalAmount,
           notes: orderData.notes,
           status: OrderStatus.PENDING,
+          paymentMethod: orderData.paymentMethod || 'COD',
+          paymentStatus: orderData.paymentStatus || 'PENDING',
           ...(userId ? { staff: { connect: { id: userId } } } : {}),
           ...(finalCustomerId ? { customer: { connect: { id: finalCustomerId } } } : {}),
           items: {

@@ -7,9 +7,11 @@ import "./globals.css";
 
 const inter = Inter({ subsets: ['latin'] });
 
+import { Toaster } from 'react-hot-toast';
+
 export const metadata: Metadata = {
-  title: 'Honda Đại Lợi | Phụ tùng xe máy chính hãng',
-  description: 'Chuyên cung cấp phụ tùng xe máy Honda chính hãng, uy tín hàng đầu.',
+  title: 'Honda Đại Lợi - Phụ tùng chính hãng',
+  description: 'Hệ thống quản lý và bán lẻ phụ tùng xe máy Honda chính hãng',
 };
 
 export default function RootLayout({
@@ -19,10 +21,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="vi">
-      <body className={`${inter.className} bg-[#F5F5F7] text-gray-900 font-sans antialiased`}>
+      <body className={`${inter.className} bg-white text-gray-900`}>
+        <Toaster position="top-right" />
         <Navbar />
         <CartSidebar />
-        <main className="min-h-screen pt-24">
+        <main className="min-h-screen">
           {children}
         </main>
         <Footer />
