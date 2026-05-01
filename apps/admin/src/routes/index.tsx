@@ -12,6 +12,7 @@ import { Transactions } from '../pages/transactions/index';
 import { Users } from '../pages/users/index';
 import { Settings } from '../pages/settings/index';
 import { Orders } from '../pages/orders/index';
+import { Media } from '../pages/media/index';
 import { NotFound } from '../pages/NotFound';
 
 export const router = createBrowserRouter([
@@ -62,6 +63,10 @@ export const router = createBrowserRouter([
           {
             path: 'orders',
             element: <Orders />,
+          },
+          {
+            path: 'media',
+            element: <Media />,
           },
           {
             path: 'settings',

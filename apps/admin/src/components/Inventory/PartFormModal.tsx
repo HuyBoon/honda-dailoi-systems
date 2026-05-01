@@ -91,7 +91,6 @@ export const PartFormModal = ({
       });
     }
   }, [editingPart, categories, isOpen]);
-
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -144,13 +143,18 @@ export const PartFormModal = ({
     return `${API_BASE_URL}${url}`;
   };
 
+  const selectedCategoryName = categories?.find(c => c.id === formData.categoryId)?.name;
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[800px] rounded-2xl bg-white p-0 overflow-hidden border-none shadow-2xl flex flex-col max-h-[90vh]">
         <form onSubmit={handleSubmit} className="flex flex-col h-full overflow-hidden">
           <DialogHeader className="p-6 pb-2 shrink-0">
             <DialogTitle className="text-xl font-bold text-gray-900">
-              {editingPart ? 'Cập nhật phụ tùng' : 'Thêm phụ tùng mới'}
+              {editingPart ? `Cập nhật: ${editingPart.name}` : 'Thêm phụ tùng mới'}
+              {selectedCategoryName && (
+                <span className="ml-2 text-sm font-normal text-gray-400">({selectedCategoryName})</span>
+              )}
             </DialogTitle>
           </DialogHeader>
           
@@ -172,8 +176,10 @@ export const PartFormModal = ({
                     value={formData.categoryId} 
                     onValueChange={val => setFormData({...formData, categoryId: val})}
                   >
-                    <SelectTrigger className="rounded-lg border-gray-200 h-11">
-                      <SelectValue placeholder="Chọn danh mục" />
+                    <SelectTrigger className="rounded-lg border-gray-200 h-11 w-full">
+                      <SelectValue placeholder="Chọn danh mục">
+                        {selectedCategoryName}
+                      </SelectValue>
                     </SelectTrigger>
                     <SelectContent className="bg-white border-gray-100">
                       {categories?.map(cat => (

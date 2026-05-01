@@ -18,7 +18,7 @@ export class CreatePartDto {
   description?: string;
 
   @ApiPropertyOptional({ description: 'Thumbnail image URL' })
-  @IsUrl()
+  @IsString()
   @IsOptional()
   imageUrl?: string;
 

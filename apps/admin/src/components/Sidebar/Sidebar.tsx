@@ -3,7 +3,7 @@ import { NavLink } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   LayoutDashboard, Users, Settings, ChevronRight, Package, 
-  FileText, Car, ArrowLeftRight, X 
+  FileText, Car, ArrowLeftRight, X, Image
 } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
 
@@ -33,6 +33,7 @@ const MENU_GROUPS = [
     header: 'HỆ THỐNG', 
     items: [
       { path: '/users', label: 'Quản lý nhân viên', icon: Users },
+      { path: '/media', label: 'Quản lý hình ảnh', icon: Image },
       { path: '/settings', label: 'Cài đặt', icon: Settings },
     ]
   }

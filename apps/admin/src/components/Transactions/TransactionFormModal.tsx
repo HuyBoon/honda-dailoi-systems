@@ -52,6 +52,8 @@ export const TransactionFormModal = ({
     setFormData({ partId: '', type: TransactionType.IMPORT, quantity: 1, notes: '' });
   };
 
+  const selectedPartName = parts?.find(p => p.id === formData.partId)?.name;
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[450px] rounded-2xl bg-white p-0 overflow-hidden border-none shadow-2xl">
@@ -66,8 +68,10 @@ export const TransactionFormModal = ({
                 value={formData.partId} 
                 onValueChange={(val) => setFormData({...formData, partId: val})}
               >
-                <SelectTrigger className="rounded-lg border-gray-200">
-                  <SelectValue placeholder="Chọn phụ tùng cần giao dịch" />
+                <SelectTrigger className="rounded-lg border-gray-200 w-full">
+                  <SelectValue placeholder="Chọn phụ tùng cần giao dịch">
+                    {selectedPartName}
+                  </SelectValue>
                 </SelectTrigger>
                 <SelectContent className="bg-white border-gray-100 max-h-[300px]">
                   <div className="p-2 sticky top-0 bg-white z-10 border-b border-gray-100 mb-1">
