@@ -1,6 +1,11 @@
+'use client';
+
 import { ShoppingCart, Eye, Star } from 'lucide-react';
+import Link from 'next/link';
+import { useCartStore } from '@/store/useCartStore';
 
 interface PartCardProps {
+  id: string;
   name: string;
   partNumber: string;
   price: number;
@@ -10,6 +15,7 @@ interface PartCardProps {
 }
 
 export default function PartCard({ 
+  id,
   name, 
   partNumber, 
   price, 
@@ -17,14 +23,22 @@ export default function PartCard({
   rating = 5,
   isNew = false 
 }: PartCardProps) {
+  const { addItem } = useCartStore();
+
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
+  };
+
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    addItem({ id, name, price, imageUrl, partNumber });
   };
 
   return (
     <div className="honda-card group overflow-hidden">
       {/* Image Container */}
-      <div className="relative aspect-square overflow-hidden bg-gray-50">
+      <Link href={`/parts/${id}`} className="relative block aspect-square overflow-hidden bg-gray-50">
         <img 
           src={imageUrl || 'https://images.unsplash.com/photo-1581235720704-06d3acfcba80?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80'} 
           alt={name}
@@ -45,21 +59,26 @@ export default function PartCard({
 
         {/* Quick Actions */}
         <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3 translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
-          <button className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-gray-900 hover:bg-[#CC0000] hover:text-white transition-all shadow-xl">
+          <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-gray-900 hover:bg-[#CC0000] hover:text-white transition-all shadow-xl">
             <Eye size={20} />
-          </button>
-          <button className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-gray-900 hover:bg-[#CC0000] hover:text-white transition-all shadow-xl">
+          </div>
+          <button 
+            onClick={handleAddToCart}
+            className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-gray-900 hover:bg-[#CC0000] hover:text-white transition-all shadow-xl"
+          >
             <ShoppingCart size={20} />
           </button>
         </div>
-      </div>
+      </Link>
 
       {/* Content */}
       <div className="p-6 space-y-3">
         <div className="flex justify-between items-start">
           <div className="min-w-0">
             <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest truncate">{partNumber}</p>
-            <h3 className="text-lg font-black text-gray-900 truncate group-hover:text-[#CC0000] transition-colors">{name}</h3>
+            <Link href={`/parts/${id}`}>
+              <h3 className="text-lg font-black text-gray-900 truncate group-hover:text-[#CC0000] transition-colors">{name}</h3>
+            </Link>
           </div>
         </div>
 
@@ -72,9 +91,9 @@ export default function PartCard({
 
         <div className="pt-2 flex justify-between items-center border-t border-gray-50">
           <span className="text-xl font-black text-[#CC0000]">{formatCurrency(price)}</span>
-          <button className="text-[10px] font-black uppercase tracking-widest text-gray-900 hover:text-[#CC0000] transition-colors border-b-2 border-gray-900 hover:border-[#CC0000]">
+          <Link href={`/parts/${id}`} className="text-[10px] font-black uppercase tracking-widest text-gray-900 hover:text-[#CC0000] transition-colors border-b-2 border-gray-900 hover:border-[#CC0000]">
             Chi tiết
-          </button>
+          </Link>
         </div>
       </div>
     </div>

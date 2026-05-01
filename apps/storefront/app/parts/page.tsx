@@ -2,11 +2,11 @@ import { getParts, getCategories, getVehicles } from '@/lib/api';
 import PartCard from '@/components/PartCard';
 import { Search, Filter, SlidersHorizontal, ChevronDown } from 'lucide-react';
 
-export default async function PartsPage({
-  searchParams,
-}: {
-  searchParams: { query?: string; categoryId?: string; vehicleId?: string };
+export default async function PartsPage(props: {
+  searchParams: Promise<{ query?: string; categoryId?: string; vehicleId?: string }>;
 }) {
+  const searchParams = await props.searchParams;
+  
   const [parts, categories, vehicles] = await Promise.all([
     getParts(searchParams),
     getCategories(),
@@ -71,6 +71,7 @@ export default async function PartsPage({
                 <input 
                   type="text" 
                   placeholder="Tìm kiếm phụ tùng..."
+                  defaultValue={searchParams.query || ''}
                   className="w-full pl-12 pr-4 py-3 bg-white border border-gray-100 rounded-2xl text-sm focus:ring-2 focus:ring-[#CC0000]/20 outline-none transition-all"
                 />
               </div>
@@ -96,6 +97,7 @@ export default async function PartsPage({
               {parts.map((part: any) => (
                 <PartCard 
                   key={part.id}
+                  id={part.id}
                   name={part.name}
                   partNumber={part.partNumber}
                   price={Number(part.price)}

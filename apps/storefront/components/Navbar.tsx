@@ -2,19 +2,26 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Search, ShoppingCart, Menu, X, User, ShieldCheck } from 'lucide-react';
+import { Search, ShoppingCart, Menu, X, User } from 'lucide-react';
+import { useCartStore } from '@/store/useCartStore';
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  
+  const { items, openCart } = useCartStore();
 
   useEffect(() => {
+    setMounted(true);
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  const cartItemsCount = items.reduce((acc, item) => acc + item.quantity, 0);
 
   return (
     <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
@@ -55,9 +62,16 @@ export default function Navbar() {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#CC0000] transition-colors" size={18} />
             </div>
 
-            <button className="relative p-2 text-gray-700 hover:text-[#CC0000] transition-colors">
+            <button 
+              onClick={openCart}
+              className="relative p-2 text-gray-700 hover:text-[#CC0000] transition-colors"
+            >
               <ShoppingCart size={22} />
-              <span className="absolute top-0 right-0 w-4 h-4 bg-[#CC0000] text-white text-[10px] font-bold rounded-full flex items-center justify-center">0</span>
+              {mounted && cartItemsCount > 0 && (
+                <span className="absolute top-0 right-0 w-4 h-4 bg-[#CC0000] text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                  {cartItemsCount}
+                </span>
+              )}
             </button>
 
             <Link href="/login" className="hidden md:flex p-2 text-gray-700 hover:text-[#CC0000] transition-colors">

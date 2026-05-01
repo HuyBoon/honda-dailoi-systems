@@ -1,25 +1,38 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
+const API_BASE = 'http://127.0.0.1:3000';
+const API_URL = `${API_BASE}/api`;
+
+const formatImageUrl = (url?: string) => {
+  if (!url) return undefined;
+  if (url.startsWith('http')) return url;
+  return `${API_BASE}${url}`;
+};
 
 export async function getParts(params?: { query?: string; categoryId?: string; vehicleId?: string }) {
   const searchParams = new URLSearchParams();
-  if (params?.query) searchParams.append('query', params.query);
+  if (params?.query) searchParams.append('q', params.query);
   if (params?.categoryId) searchParams.append('categoryId', params.categoryId);
   if (params?.vehicleId) searchParams.append('vehicleId', params.vehicleId);
 
-  const res = await fetch(`${API_URL}/parts?${searchParams.toString()}`, {
-    next: { revalidate: 60 }, // Revalidate every minute
+  const url = `${API_URL}/parts?${searchParams.toString()}`;
+  const res = await fetch(url, {
+    next: { revalidate: 60 },
   });
 
   if (!res.ok) {
+    console.error(`Fetch failed: ${url}`, res.status);
     throw new Error('Failed to fetch parts');
   }
 
-  return res.json();
+  const parts = await res.json();
+  return parts.map((part: any) => ({
+    ...part,
+    imageUrl: formatImageUrl(part.imageUrl),
+  }));
 }
 
 export async function getCategories() {
   const res = await fetch(`${API_URL}/categories`, {
-    next: { revalidate: 3600 }, // Cache categories longer
+    next: { revalidate: 3600 },
   });
 
   if (!res.ok) {
@@ -39,4 +52,22 @@ export async function getVehicles() {
   }
 
   return res.json();
+}
+
+export async function getPartById(id: string) {
+  const url = `${API_URL}/parts/${id}`;
+  const res = await fetch(url, {
+    next: { revalidate: 60 },
+  });
+
+  if (!res.ok) {
+    console.error(`Fetch failed: ${url}`, res.status);
+    throw new Error('Failed to fetch part details');
+  }
+
+  const part = await res.json();
+  return {
+    ...part,
+    imageUrl: formatImageUrl(part.imageUrl),
+  };
 }
