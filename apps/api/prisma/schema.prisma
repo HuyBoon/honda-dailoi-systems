@@ -19,6 +19,12 @@ enum Role {
   MANAGER
 }
 
+enum OrderStatus {
+  PENDING
+  COMPLETED
+  CANCELLED
+}
+
 // --- MODELS ---
 
 model User {
@@ -26,6 +32,7 @@ model User {
   email     String   @unique
   password  String
   role      Role     @default(USER)
+  orders    Order[]  // Staff who created the order
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -81,6 +88,9 @@ model Part {
   // One-to-Many relation: A part has many inventory transactions
   transactions  InventoryTransaction[]
 
+  // Items in orders
+  orderItems    OrderItem[]
+
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
@@ -100,4 +110,45 @@ model InventoryTransaction {
 
   // Acts as a ledger, so we only need to know when it happened
   createdAt     DateTime        @default(now()) 
+}
+
+model Customer {
+  id        String   @id @default(uuid())
+  name      String
+  phone     String   @unique
+  address   String?
+  orders    Order[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Order {
+  id          String      @id @default(uuid())
+  orderNumber String      @unique // e.g. HD-20240501-001
+  status      OrderStatus @default(PENDING)
+  totalAmount Decimal     @db.Decimal(12, 2)
+  notes       String?
+
+  customerId  String?
+  customer    Customer?   @relation(fields: [customerId], references: [id])
+
+  staffId     String
+  staff       User        @relation(fields: [staffId], references: [id])
+
+  items       OrderItem[]
+
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+model OrderItem {
+  id        String  @id @default(uuid())
+  quantity  Int
+  price     Decimal @db.Decimal(10, 2) // Price at the time of sale
+
+  orderId   String
+  order     Order   @relation(fields: [orderId], references: [id])
+
+  partId    String
+  part      Part    @relation(fields: [partId], references: [id])
 }
