@@ -1,6 +1,9 @@
 import {
   Controller,
   Post,
+  Get,
+  Delete,
+  Query,
   UseInterceptors,
   UploadedFile,
   BadRequestException,
@@ -49,5 +52,21 @@ export class UploadController {
       throw new BadRequestException('File is required');
     }
     return this.uploadService.processAndSaveThumbnail(file);
+  }
+
+  @Get()
+  @ApiOperation({ summary: 'List all uploaded files' })
+  async listFiles() {
+    return this.uploadService.getAllFiles();
+  }
+
+  @Delete('file')
+  @ApiOperation({ summary: 'Delete a file by URL' })
+  async deleteFile(@Query('url') url: string) {
+    if (!url) {
+      throw new BadRequestException('URL is required');
+    }
+    await this.uploadService.deleteFile(url);
+    return { message: 'File deleted successfully' };
   }
 }

@@ -2,13 +2,23 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '@/database/prisma/prisma.service';
 import { CreatePartDto } from './dto/create-part.dto';
 import { UpdatePartDto } from './dto/update-part.dto';
+import { UploadService } from '@/modules/upload/upload.service';
 
 @Injectable()
 export class PartsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private uploadService: UploadService,
+  ) {}
 
   create(createPartDto: CreatePartDto) {
     const { vehicleIds, ...partData } = createPartDto;
+    
+    // Convert empty barcode to null to avoid unique constraint violation
+    if (partData.barcode === '') {
+      (partData as any).barcode = null;
+    }
+
     return this.prisma.part.create({
       data: {
         ...partData,
@@ -51,8 +61,20 @@ export class PartsService {
     return part;
   }
 
-  update(id: string, updatePartDto: UpdatePartDto) {
+  async update(id: string, updatePartDto: UpdatePartDto) {
     const { vehicleIds, ...partData } = updatePartDto;
+
+    // Convert empty barcode to null to avoid unique constraint violation
+    if (partData.barcode === '') {
+      (partData as any).barcode = null;
+    }
+
+    // Get current part to check for old image
+    const currentPart = (await this.findOne(id)) as any;
+    if (partData.imageUrl && currentPart.imageUrl && partData.imageUrl !== currentPart.imageUrl) {
+      await this.uploadService.deleteFile(currentPart.imageUrl);
+    }
+
     return this.prisma.part.update({
       where: { id },
       data: {
@@ -67,7 +89,11 @@ export class PartsService {
     });
   }
 
-  remove(id: string) {
+  async remove(id: string) {
+    const part = (await this.findOne(id)) as any;
+    if (part.imageUrl) {
+      await this.uploadService.deleteFile(part.imageUrl);
+    }
     return this.prisma.part.delete({
       where: { id },
     });

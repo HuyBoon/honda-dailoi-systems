@@ -13,7 +13,21 @@ export const uploadApiSlice = apiSlice.injectEndpoints({
         };
       },
     }),
+    getFiles: builder.query<any[], void>({
+      query: () => '/upload',
+    }),
+    deleteFile: builder.mutation<void, string>({
+      query: (url) => ({
+        url: '/upload/file',
+        method: 'DELETE',
+        params: { url },
+      }),
+    }),
   }),
 });
 
-export const { useUploadThumbnailMutation } = uploadApiSlice;
+export const { 
+  useUploadThumbnailMutation, 
+  useGetFilesQuery, 
+  useDeleteFileMutation 
+} = uploadApiSlice;

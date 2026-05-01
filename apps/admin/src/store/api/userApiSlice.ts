@@ -1,11 +1,13 @@
 import { apiSlice } from './apiSlice';
 
-export enum Role {
-  USER = 'USER',
-  ADMIN = 'ADMIN',
-  SUPER_ADMIN = 'SUPER_ADMIN',
-  MANAGER = 'MANAGER',
-}
+export type Role = 'USER' | 'ADMIN' | 'SUPER_ADMIN' | 'MANAGER';
+
+export const Role = {
+  USER: 'USER' as Role,
+  ADMIN: 'ADMIN' as Role,
+  SUPER_ADMIN: 'SUPER_ADMIN' as Role,
+  MANAGER: 'MANAGER' as Role,
+};
 
 export interface User {
   id: string;
