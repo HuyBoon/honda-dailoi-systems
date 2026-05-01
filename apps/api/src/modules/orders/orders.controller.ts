@@ -1,38 +1,43 @@
-import { Controller, Get, Post, Body, Patch, Param, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, UseGuards, Query } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { JwtAuthGuard } from '@/common/guards/jwt-auth.guard';
 import { CurrentUser } from '@/common/decorators/current-user.decorator';
-import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 
 @ApiTags('Orders')
-@ApiBearerAuth()
-@UseGuards(JwtAuthGuard)
 @Controller('orders')
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 
   @Post()
-  @ApiOperation({ summary: 'Create a new order' })
+  @ApiOperation({ summary: 'Create a new order (Public for Storefront)' })
   create(@Body() createOrderDto: CreateOrderDto, @CurrentUser() user: any) {
-    return this.ordersService.create(createOrderDto, user.sub); // Assuming sub is the userId in JWT
+    // If user exists (Staff logged in), pass their ID. Otherwise pass null for guest order.
+    return this.ordersService.create(createOrderDto, user?.sub || null);
   }
 
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @Get()
-  @ApiOperation({ summary: 'List all orders' })
+  @ApiOperation({ summary: 'List all orders (Staff only)' })
   findAll() {
     return this.ordersService.findAll();
   }
 
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @Get(':id')
-  @ApiOperation({ summary: 'Get order details by ID' })
+  @ApiOperation({ summary: 'Get order details by ID (Staff only)' })
   findOne(@Param('id') id: string) {
     return this.ordersService.findOne(id);
   }
 
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @Patch(':id')
-  @ApiOperation({ summary: 'Update order status' })
+  @ApiOperation({ summary: 'Update order status (Staff only)' })
   update(@Param('id') id: string, @Body() updateOrderDto: UpdateOrderDto) {
     return this.ordersService.update(id, updateOrderDto);
   }

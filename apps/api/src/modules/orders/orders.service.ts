@@ -9,7 +9,7 @@ import { TransactionType } from '@prisma/client';
 export class OrdersService {
   constructor(private prisma: PrismaService) {}
 
-  async create(createOrderDto: CreateOrderDto, userId: string) {
+  async create(createOrderDto: CreateOrderDto, userId?: string) {
     const { items, customerId, customerName, customerPhone, ...orderData } = createOrderDto;
 
     return this.prisma.$transaction(async (tx) => {
@@ -23,11 +23,19 @@ export class OrdersService {
 
         if (existingCustomer) {
           finalCustomerId = existingCustomer.id;
+          // Optionally update address if it's provided and different
+          if (createOrderDto.address && existingCustomer.address !== createOrderDto.address) {
+            await tx.customer.update({
+              where: { id: existingCustomer.id },
+              data: { address: createOrderDto.address },
+            });
+          }
         } else {
           const newCustomer = await tx.customer.create({
             data: {
               name: customerName,
               phone: customerPhone,
+              address: createOrderDto.address,
             },
           });
           finalCustomerId = newCustomer.id;
@@ -56,8 +64,8 @@ export class OrdersService {
           totalAmount,
           notes: orderData.notes,
           status: OrderStatus.PENDING,
-          staffId: userId,
-          customerId: finalCustomerId,
+          ...(userId ? { staff: { connect: { id: userId } } } : {}),
+          ...(finalCustomerId ? { customer: { connect: { id: finalCustomerId } } } : {}),
           items: {
             create: items.map((item) => ({
               partId: item.partId,
@@ -65,7 +73,7 @@ export class OrdersService {
               price: item.price,
             })),
           },
-        },
+        } as any,
         include: {
           items: {
             include: { part: true },

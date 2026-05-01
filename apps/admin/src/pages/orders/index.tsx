@@ -15,6 +15,7 @@ import { Loader2, ShoppingCart } from 'lucide-react';
 
 export const Orders = () => {
   const { data: orders, isLoading, refetch } = useGetOrdersQuery();
+  console.log(orders);
   const [createOrder, { isLoading: isCreating }] = useCreateOrderMutation();
   const [updateStatus] = useUpdateOrderStatusMutation();
 

@@ -132,8 +132,8 @@ model Order {
   customerId  String?
   customer    Customer?   @relation(fields: [customerId], references: [id])
 
-  staffId     String
-  staff       User        @relation(fields: [staffId], references: [id])
+  staffId     String?
+  staff       User?       @relation(fields: [staffId], references: [id])
 
   items       OrderItem[]
 

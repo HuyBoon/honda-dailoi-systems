@@ -71,3 +71,25 @@ export async function getPartById(id: string) {
     imageUrl: formatImageUrl(part.imageUrl),
   };
 }
+export async function createOrder(orderData: {
+  customerName: string;
+  customerPhone: string;
+  address?: string;
+  items: { partId: string; quantity: number; price: number }[];
+}) {
+  const res = await fetch(`${API_URL}/orders`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(orderData),
+  });
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    console.error('Order submission failed:', errorData);
+    throw new Error(errorData.message || 'Failed to submit order');
+  }
+
+  return res.json();
+}

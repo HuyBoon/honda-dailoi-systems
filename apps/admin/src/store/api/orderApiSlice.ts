@@ -32,8 +32,8 @@ export interface Order {
   notes?: string;
   customerId?: string;
   customer?: Customer;
-  staffId: string;
-  staff: {
+  staffId?: string;
+  staff?: {
     id: string;
     email: string;
   };

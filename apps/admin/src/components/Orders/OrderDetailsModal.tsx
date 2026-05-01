@@ -63,7 +63,7 @@ export const OrderDetailsModal = ({ isOpen, onClose, order, onUpdateStatus }: Or
                   <Calendar size={12} /> {format(new Date(order.createdAt), 'dd/MM/yyyy HH:mm')}
                 </span>
                 <span className="text-xs text-gray-400 flex items-center gap-1">
-                  <User size={12} /> Nhân viên: {order.staff?.email}
+                  <User size={12} /> {order.staff ? `Nhân viên: ${order.staff.email}` : 'Đặt hàng trực tuyến'}
                 </span>
               </div>
             </div>

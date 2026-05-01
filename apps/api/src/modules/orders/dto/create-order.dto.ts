@@ -44,6 +44,11 @@ export class CreateOrderDto {
   @ApiProperty({ required: false })
   @IsString()
   @IsOptional()
+  address?: string;
+
+  @ApiProperty({ required: false })
+  @IsString()
+  @IsOptional()
   notes?: string;
 
   @ApiProperty({ type: [OrderItemDto] })
