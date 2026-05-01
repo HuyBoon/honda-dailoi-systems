@@ -24,7 +24,8 @@ import { useUploadThumbnailMutation } from '../../store/api/uploadApiSlice';
 
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
-import { ImageIcon } from 'lucide-react';
+import { ImageIcon, Library } from 'lucide-react';
+import { MediaPickerModal } from './MediaPickerModal';
 
 const API_BASE_URL = 'http://localhost:3000';
 
@@ -48,6 +49,7 @@ export const PartFormModal = ({
   const { data: vehicles } = useGetVehiclesQuery();
   const [uploadThumbnail, { isLoading: isUploading }] = useUploadThumbnailMutation();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isMediaPickerOpen, setIsMediaPickerOpen] = useState(false);
 
   const [formData, setFormData] = useState({
     partNumber: '',
@@ -209,30 +211,41 @@ export const PartFormModal = ({
                       <ImageIcon className="text-gray-300" size={32} />
                     )}
                   </div>
-                  <div className="flex-1 space-y-3">
-                    <input 
-                      type="file" 
-                      ref={fileInputRef}
-                      onChange={handleFileChange}
-                      className="hidden" 
-                      accept="image/*"
-                    />
-                    <Button 
-                      type="button"
-                      variant="outline"
-                      onClick={() => fileInputRef.current?.click()}
-                      disabled={isUploading}
-                      className="w-full h-11 rounded-xl border-gray-200 text-gray-600 hover:bg-gray-50 flex gap-2"
-                    >
-                      {isUploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload size={16} />}
-                      {formData.imageUrl ? 'Thay đổi ảnh' : 'Tải ảnh lên'}
-                    </Button>
-                    <div className="p-3 bg-blue-50/50 rounded-xl border border-blue-100">
-                      <p className="text-[10px] text-blue-600 leading-relaxed">
-                        <strong>Yêu cầu:</strong> Ảnh định dạng JPG, PNG hoặc WebP. Dung lượng tối đa 2MB. Ảnh sẽ được tự động tối ưu hóa.
-                      </p>
+                    <div className="flex flex-col gap-2 flex-1">
+                      <input 
+                        type="file" 
+                        ref={fileInputRef}
+                        onChange={handleFileChange}
+                        className="hidden" 
+                        accept="image/*"
+                      />
+                      <div className="flex gap-2">
+                        <Button 
+                          type="button"
+                          variant="outline"
+                          onClick={() => fileInputRef.current?.click()}
+                          disabled={isUploading}
+                          className="flex-1 h-11 rounded-xl border-gray-200 text-gray-600 hover:bg-gray-50 flex gap-2"
+                        >
+                          {isUploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload size={16} />}
+                          Tải lên
+                        </Button>
+                        <Button 
+                          type="button"
+                          variant="outline"
+                          onClick={() => setIsMediaPickerOpen(true)}
+                          className="flex-1 h-11 rounded-xl border-gray-200 text-gray-600 hover:bg-gray-50 flex gap-2"
+                        >
+                          <Library size={16} />
+                          Thư viện
+                        </Button>
+                      </div>
+                      <div className="p-2.5 bg-blue-50/50 rounded-xl border border-blue-100">
+                        <p className="text-[10px] text-blue-600 leading-relaxed font-medium">
+                          <strong>Yêu cầu:</strong> Ảnh định dạng JPG, PNG hoặc WebP. Dung lượng tối đa 2MB. 
+                        </p>
+                      </div>
                     </div>
-                  </div>
                 </div>
               </div>
             </div>
@@ -347,6 +360,12 @@ export const PartFormModal = ({
           </DialogFooter>
         </form>
       </DialogContent>
+      <MediaPickerModal 
+        isOpen={isMediaPickerOpen}
+        onClose={() => setIsMediaPickerOpen(false)}
+        onSelect={(url) => setFormData({ ...formData, imageUrl: url })}
+        currentValue={formData.imageUrl}
+      />
     </Dialog>
   );
 };

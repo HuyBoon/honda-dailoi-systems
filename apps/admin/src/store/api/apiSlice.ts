@@ -14,6 +14,6 @@ export const apiSlice = createApi({
       return headers;
     },
   }),
-  tagTypes: ['User', 'Category', 'Part', 'Vehicle', 'Inventory', 'Dashboard'], // Setup standard tags for caching logic later
+  tagTypes: ['User', 'Category', 'Part', 'Vehicle', 'Inventory', 'Dashboard', 'Order', 'Customer'], // Setup standard tags for caching logic later
   endpoints: () => ({}),
 });

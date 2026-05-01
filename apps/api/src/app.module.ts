@@ -15,6 +15,7 @@ import { join } from 'path';
 import { TransactionsModule } from './modules/transactions/transactions.module';
 import { StatsModule } from './modules/stats/stats.module';
 import { UploadModule } from './modules/upload/upload.module';
+import { OrdersModule } from '@/modules/orders/orders.module';
 import configuration from '@/config/configuration';
 
 @Module({
@@ -37,6 +38,7 @@ import configuration from '@/config/configuration';
     TransactionsModule,
     StatsModule,
     UploadModule,
+    OrdersModule,
   ],
   controllers: [AppController],
   providers: [AppService],

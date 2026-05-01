@@ -101,67 +101,84 @@ export const Sidebar = ({ isCollapsed, isMobileOpen, setIsMobileOpen }: SidebarP
         </div>
 
         {/* Menu cuộn */}
-        <nav className="flex-1 flex flex-col py-4 overflow-y-auto custom-scrollbar">
-          {MENU_GROUPS.map((group, groupIdx) => (
-            <div key={groupIdx} className="mb-6">
-              {(!isCollapsed || isMobile) && group.header && (
-                <h4 className="px-6 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                  {group.header}
-                </h4>
-              )}
-              <ul className="space-y-1">
-                {group.items.map((item) => {
-                  const navLinkContent = (
-                    <NavLink 
-                      to={item.path}
-                      onClick={() => isMobile && setIsMobileOpen(false)}
-                      className={({ isActive }) => `
-                        flex items-center mx-3 px-3 py-2.5 rounded-lg transition-colors group
-                        ${isActive ? 'bg-red-600 text-white shadow-md' : 'text-gray-600 hover:bg-red-50 hover:text-red-600'}
-                        ${isCollapsed && !isMobile ? 'justify-center' : ''}
-                      `}
-                    >
-                      {({ isActive }) => (
-                        <>
-                          <item.icon size={20} className={`shrink-0 ${isCollapsed && !isMobile ? '' : 'mr-3'} ${isActive ? 'text-white' : 'text-gray-400 group-hover:text-red-600'}`} />
-                          {(!isCollapsed || isMobile) && <span className="text-sm font-medium">{item.label}</span>}
-                          {(!isCollapsed || isMobile) && <ChevronRight size={16} className={`ml-auto ${isActive ? 'text-white/70' : 'text-gray-300 group-hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity'}`} />}
-                        </>
-                      )}
-                    </NavLink>
-                  );
+        <nav className="flex-1 py-4 overflow-y-auto custom-scrollbar">
+          <div className="pb-10">
+            {MENU_GROUPS.map((group, groupIdx) => (
+              <div key={groupIdx} className="mb-6">
+                {(!isCollapsed || isMobile) && group.header && (
+                  <h4 className="px-6 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                    {group.header}
+                  </h4>
+                )}
+                <ul className="space-y-1">
+                  {group.items.map((item) => {
+                    const navLinkContent = (
+                      <NavLink 
+                        to={item.path}
+                        onClick={() => isMobile && setIsMobileOpen(false)}
+                        className={({ isActive }) => `
+                          flex items-center mx-3 px-3 py-2.5 rounded-lg transition-colors group
+                          ${isActive ? 'bg-red-600 text-white shadow-md' : 'text-gray-600 hover:bg-red-50 hover:text-red-600'}
+                          ${isCollapsed && !isMobile ? 'justify-center' : ''}
+                        `}
+                      >
+                        {({ isActive }) => (
+                          <>
+                            <item.icon size={20} className={`shrink-0 ${isCollapsed && !isMobile ? '' : 'mr-3'} ${isActive ? 'text-white' : 'text-gray-400 group-hover:text-red-600'}`} />
+                            {(!isCollapsed || isMobile) && <span className="text-sm font-medium">{item.label}</span>}
+                            {(!isCollapsed || isMobile) && <ChevronRight size={16} className={`ml-auto ${isActive ? 'text-white/70' : 'text-gray-300 group-hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity'}`} />}
+                          </>
+                        )}
+                      </NavLink>
+                    );
 
-                  return (
-                    <li key={item.path}>
-                      {isCollapsed && !isMobile ? (
-                        <Tooltip>
-                          <TooltipTrigger className="w-full focus:outline-none">
-                            {navLinkContent}
-                          </TooltipTrigger>
-                          <TooltipContent side="right" className="bg-gray-800 text-white font-medium text-xs rounded-md px-3 py-2 shadow-lg border border-gray-700 ml-4 z-[150] flex items-center">
-                            {item.label}
-                          </TooltipContent>
-                        </Tooltip>
-                      ) : (
-                        navLinkContent
-                      )}
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
-          ))}
+                    return (
+                      <li key={item.path}>
+                        {isCollapsed && !isMobile ? (
+                          <Tooltip>
+                            <TooltipTrigger className="w-full focus:outline-none">
+                              {navLinkContent}
+                            </TooltipTrigger>
+                            <TooltipContent side="right" className="bg-gray-800 text-white font-medium text-xs rounded-md px-3 py-2 shadow-lg border border-gray-700 ml-4 z-[150] flex items-center">
+                              {item.label}
+                            </TooltipContent>
+                          </Tooltip>
+                        ) : (
+                          navLinkContent
+                        )}
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            ))}
+          </div>
         </nav>
 
-        {/* Footer cố định ở dưới */}
-        <div className="p-4 border-t border-gray-100  shrink-0 flex items-center justify-center">
-          <div className={`transition-all duration-300   ${isCollapsed && !isMobile ? 'w-8 h-8' : 'w-40 h-auto'}`}>
+        {/* Footer */}
+        <div className="relative p-5 border-t border-red-100 shrink-0 bg-white flex flex-col items-center justify-center min-h-[100px] overflow-hidden">
+          
+          {/* LỚP BACKGROUND: Ảnh Logo ở dưới */}
+          <div className={`absolute flex items-center justify-center z-0 transition-all duration-300 opacity-20 pointer-events-none ${isCollapsed && !isMobile ? 'w-10 h-10' : 'w-28 h-28'}`}>
             <img 
               src="/logo.png" 
-              alt="Footer Logo" 
+              alt="Footer Background" 
               className="w-full h-full object-contain block"
             />
           </div>
+          
+          {/* LỚP FOREGROUND: Chữ nổi lên trên */}
+          {(!isCollapsed || isMobile) && (
+            <div className="relative z-10 text-center animate-in fade-in slide-in-from-bottom-2 duration-500">
+              {/* Thêm một lớp nền kính mờ (glassmorphism) nhẹ để chữ dễ đọc hơn nếu đè lên chi tiết rối của ảnh */}
+              <div className="bg-white/40 backdrop-blur-[2px] px-2 py-1 rounded-lg">
+                <h3 className="text-[10px] font-black text-red-600 uppercase tracking-widest leading-tight drop-shadow-sm">
+               HuyBoon.Tech
+                </h3>
+               
+              </div>
+            </div>
+          )}
         </div>
 
       </motion.aside>
