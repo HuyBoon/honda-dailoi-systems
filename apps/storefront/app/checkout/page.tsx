@@ -1,14 +1,16 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useCartStore } from '@/store/useCartStore';
-import { createOrder, createMoMoPayment } from '@/lib/api';
+import { useAuthStore } from '@/store/useAuthStore';
+import { createOrder, createMoMoPayment, getProfile } from '@/lib/api';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-hot-toast';
 import { Loader2, Truck, Package, ShieldCheck } from 'lucide-react';
 
 export default function CheckoutPage() {
   const { items, clearCart } = useCartStore();
+  const { user, token } = useAuthStore();
   const router = useRouter();
   
   // Refs for focusing
@@ -22,6 +24,34 @@ export default function CheckoutPage() {
     address: '',
     notes: ''
   });
+
+  // Pre-fill form if user is logged in
+  useEffect(() => {
+    async function loadProfile() {
+      if (!token) return;
+      try {
+        const profile = await getProfile(token);
+        if (profile) {
+          setFormData(prev => ({
+            ...prev,
+            name: profile.name || '',
+            phone: profile.phone || '',
+            address: profile.address || '',
+          }));
+        }
+      } catch (err) {
+        // Fallback to email if profile fetch fails
+        if (user) {
+          setFormData(prev => ({
+            ...prev,
+            name: prev.name || user.email.split('@')[0].toUpperCase(),
+          }));
+        }
+      }
+    }
+    loadProfile();
+  }, [token, user]);
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<'COD' | 'MOMO'>('COD');
 
@@ -66,9 +96,12 @@ export default function CheckoutPage() {
           quantity: item.quantity,
           price: Number(item.price)
         }))
-      });
+      }, token || undefined);
 
-      // 2. Handle MoMo Redirect or COD success
+      // 2. Clear cart (both local and backend)
+      await clearCart();
+
+      // 3. Handle MoMo Redirect or COD success
       if (paymentMethod === 'MOMO') {
         const momoRes = await createMoMoPayment({
           orderId: order.id,
@@ -84,7 +117,6 @@ export default function CheckoutPage() {
         }
       }
 
-      clearCart();
       router.push('/checkout/success');
     } catch (err) {
       toast.error('Có lỗi xảy ra khi đặt hàng. Vui lòng thử lại.');

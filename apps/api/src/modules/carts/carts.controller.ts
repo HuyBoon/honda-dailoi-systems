@@ -39,4 +39,10 @@ export class CartsController {
   clearCart(@Request() req) {
     return this.cartsService.clearCart(req.user.id);
   }
+
+  @Post('merge')
+  @ApiOperation({ summary: 'Merge guest cart items into user cart' })
+  mergeCart(@Request() req, @Body() body: { items: { partId: string; quantity: number }[] }) {
+    return this.cartsService.mergeCart(req.user.id, body.items);
+  }
 }

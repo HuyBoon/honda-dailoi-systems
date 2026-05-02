@@ -3,6 +3,7 @@ import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { JwtAuthGuard } from '@/common/guards/jwt-auth.guard';
+import { OptionalJwtAuthGuard } from '@/common/guards/optional-jwt-auth.guard';
 import { CurrentUser } from '@/common/decorators/current-user.decorator';
 import { ApiTags, ApiOperation, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 
@@ -11,11 +12,12 @@ import { ApiTags, ApiOperation, ApiBearerAuth, ApiQuery } from '@nestjs/swagger'
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 
+  @UseGuards(OptionalJwtAuthGuard)
   @Post()
   @ApiOperation({ summary: 'Create a new order (Public for Storefront)' })
   create(@Body() createOrderDto: CreateOrderDto, @CurrentUser() user: any) {
-    // If user exists (Staff logged in), pass their ID. Otherwise pass null for guest order.
-    return this.ordersService.create(createOrderDto, user?.sub || null);
+    // If user exists, pass their ID. Otherwise pass null for guest order.
+    return this.ordersService.create(createOrderDto, user?.id || null);
   }
 
   @UseGuards(JwtAuthGuard)

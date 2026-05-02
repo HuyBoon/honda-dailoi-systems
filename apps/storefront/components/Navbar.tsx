@@ -15,15 +15,22 @@ export default function Navbar() {
   
   const profileRef = useRef<HTMLDivElement>(null);
   
-  const { items, openCart, syncWithBackend, clearCart } = useCartStore();
+  const { items, openCart, syncWithBackend, clearCart, mergeGuestCart, lastSyncedUserId } = useCartStore();
   const { user, logout } = useAuthStore();
 
-  // Sync cart when user logs in
+  // Merge or sync cart when user logs in
   useEffect(() => {
-    if (user) {
-      syncWithBackend();
+    if (user && mounted) {
+      // Only merge if these items are not already synced for this user
+      if (lastSyncedUserId !== user.id) {
+        if (items.length > 0) {
+          mergeGuestCart();
+        } else {
+          syncWithBackend();
+        }
+      }
     }
-  }, [user, syncWithBackend]);
+  }, [user, mounted, lastSyncedUserId]); // Only trigger on user change (login/logout/mount)
 
   const handleLogout = () => {
     logout();

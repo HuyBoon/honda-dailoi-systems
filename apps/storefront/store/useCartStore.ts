@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { addToCart, updateCartItem, removeFromCart, clearBackendCart, getCart } from '@/lib/api';
+import { addToCart, updateCartItem, removeFromCart, clearBackendCart, getCart, mergeCart } from '@/lib/api';
 import { useAuthStore } from './useAuthStore';
 
 export interface CartItem {
@@ -15,11 +15,13 @@ export interface CartItem {
 interface CartStore {
   items: CartItem[];
   isOpen: boolean;
+  lastSyncedUserId: string | null;
   addItem: (item: Omit<CartItem, 'quantity'>) => Promise<void>;
   removeItem: (id: string) => Promise<void>;
   updateQuantity: (id: string, quantity: number) => Promise<void>;
   clearCart: () => Promise<void>;
   syncWithBackend: () => Promise<void>;
+  mergeGuestCart: () => Promise<void>;
   toggleCart: () => void;
   closeCart: () => void;
   openCart: () => void;
@@ -30,6 +32,7 @@ export const useCartStore = create<CartStore>()(
     (set, get) => ({
       items: [],
       isOpen: false,
+      lastSyncedUserId: null,
       
       addItem: async (item) => {
         const { token } = useAuthStore.getState();
@@ -99,12 +102,12 @@ export const useCartStore = create<CartStore>()(
             console.error('Sync failed:', err);
           }
         }
-        set({ items: [] });
+        set({ items: [], lastSyncedUserId: null });
       },
 
       syncWithBackend: async () => {
-        const { token } = useAuthStore.getState();
-        if (!token) return;
+        const { token, user } = useAuthStore.getState();
+        if (!token || !user) return;
 
         try {
           const backendCart = await getCart(token);
@@ -117,10 +120,29 @@ export const useCartStore = create<CartStore>()(
               partNumber: bi.part.partNumber,
               quantity: bi.quantity,
             }));
-            set({ items });
+            set({ items, lastSyncedUserId: user.id });
           }
         } catch (err) {
           console.error('Sync failed:', err);
+        }
+      },
+      
+      mergeGuestCart: async () => {
+        const { token, user } = useAuthStore.getState();
+        const { items } = get();
+        if (!token || !user || items.length === 0) return;
+
+        try {
+          const mergeItems = items.map(item => ({
+            partId: item.id,
+            quantity: item.quantity
+          }));
+          await mergeCart(token, mergeItems);
+          // Set lastSyncedUserId so the syncWithBackend call knows it's the same user
+          set({ lastSyncedUserId: user.id });
+          await get().syncWithBackend();
+        } catch (err) {
+          console.error('Merge failed:', err);
         }
       },
       

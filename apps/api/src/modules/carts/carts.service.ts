@@ -99,6 +99,51 @@ export class CartsService {
     });
   }
 
+  async mergeCart(userId: string, items: { partId: string; quantity: number }[]) {
+    const customerId = await this.getCustomerId(userId);
+    const cart = await this.getOrCreateCart(customerId);
+
+    return this.prisma.$transaction(async (tx) => {
+      for (const item of items) {
+        const existingItem = await tx.cartItem.findUnique({
+          where: {
+            cartId_partId: {
+              cartId: cart.id,
+              partId: item.partId,
+            },
+          },
+        });
+
+        if (existingItem) {
+          await tx.cartItem.update({
+            where: { id: existingItem.id },
+            data: { quantity: existingItem.quantity + item.quantity },
+          });
+        } else {
+          await tx.cartItem.create({
+            data: {
+              cartId: cart.id,
+              partId: item.partId,
+              quantity: item.quantity,
+            },
+          });
+        }
+      }
+
+      // Return the final merged cart
+      return tx.cart.findUnique({
+        where: { id: cart.id },
+        include: {
+          items: {
+            include: {
+              part: true,
+            },
+          },
+        },
+      });
+    });
+  }
+
   private async getOrCreateCart(customerId: string) {
     return this.prisma.cart.upsert({
       where: { customerId },

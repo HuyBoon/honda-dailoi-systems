@@ -135,11 +135,12 @@ export async function createOrder(orderData: {
   address?: string;
   paymentMethod?: string;
   items: { partId: string; quantity: number; price: number }[];
-}) {
+}, token?: string) {
   const res = await fetch(`${API_URL}/orders`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
     },
     body: JSON.stringify(orderData),
   });
@@ -206,5 +207,40 @@ export async function clearBackendCart(token: string) {
     headers: { Authorization: `Bearer ${token}` },
   });
   if (!res.ok) throw new Error('Failed to clear cart');
+  return res.json();
+}
+
+export async function mergeCart(token: string, items: { partId: string; quantity: number }[]) {
+  const res = await fetch(`${API_URL}/cart/merge`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ items }),
+  });
+  if (!res.ok) throw new Error('Failed to merge cart');
+  return res.json();
+}
+
+// Customer Profile
+export async function getProfile(token: string) {
+  const res = await fetch(`${API_URL}/customers/profile`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error('Failed to fetch profile');
+  return res.json();
+}
+
+export async function updateProfile(token: string, data: { name?: string; phone?: string; address?: string }) {
+  const res = await fetch(`${API_URL}/customers/profile`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error('Failed to update profile');
   return res.json();
 }

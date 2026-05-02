@@ -18,6 +18,7 @@ import { UploadModule } from './modules/upload/upload.module';
 import { OrdersModule } from '@/modules/orders/orders.module';
 import { PaymentsModule } from './modules/payments/payments.module';
 import { CartsModule } from './modules/carts/carts.module';
+import { CustomersModule } from './modules/customers/customers.module';
 import configuration from '@/config/configuration';
 
 @Module({
@@ -43,6 +44,7 @@ import configuration from '@/config/configuration';
     OrdersModule,
     PaymentsModule,
     CartsModule,
+    CustomersModule,
   ],
   controllers: [AppController],
   providers: [AppService],

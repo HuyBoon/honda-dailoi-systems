@@ -4,13 +4,13 @@ import { useState, useEffect } from 'react';
 import { useAuthStore } from '@/store/useAuthStore';
 import { User, Mail, Phone, MapPin, Save, ShieldCheck, Loader2 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
+import { getProfile, updateProfile } from '@/lib/api';
 
 export default function ProfilePage() {
-  const { user } = useAuthStore();
+  const { user, token } = useAuthStore();
   const [isLoading, setIsLoading] = useState(false);
+  const [isFetching, setIsFetching] = useState(true);
 
-  // Khởi tạo state cho form. 
-  // (Nếu API lúc đăng nhập của bạn có trả về name, phone, address thì nó sẽ tự điền vào đây)
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -18,25 +18,42 @@ export default function ProfilePage() {
     address: ''
   });
 
+  // Fetch profile on mount
   useEffect(() => {
-    if (user) {
-      setFormData({
-        name: (user as any).name || '',
-        email: user.email || '',
-        phone: (user as any).phone || '',
-        address: (user as any).address || ''
-      });
+    async function fetchProfile() {
+      if (!token) return;
+      try {
+        const profile = await getProfile(token);
+        if (profile) {
+          setFormData({
+            name: profile.name || '',
+            email: user?.email || '',
+            phone: profile.phone || '',
+            address: profile.address || ''
+          });
+        }
+      } catch (err) {
+        console.error('Failed to fetch profile:', err);
+      } finally {
+        setIsFetching(false);
+      }
     }
-  }, [user]);
+
+    fetchProfile();
+  }, [token, user]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!token) return;
+    
     setIsLoading(true);
 
-    // Ở đây bạn sẽ gọi API để cập nhật thông tin user (VD: updateProfile(formData))
-    // Tạm thời mình dùng setTimeout để giả lập độ trễ của API
     try {
-      await new Promise(resolve => setTimeout(resolve, 800));
+      await updateProfile(token, {
+        name: formData.name,
+        phone: formData.phone,
+        address: formData.address
+      });
       toast.success('Cập nhật thông tin thành công!');
     } catch (error) {
       toast.error('Có lỗi xảy ra, vui lòng thử lại sau.');
@@ -45,7 +62,16 @@ export default function ProfilePage() {
     }
   };
 
-  if (!user) return null; // CustomerLayout đã chặn rồi, nhưng cứ để đây cho an toàn type
+  if (isFetching) {
+    return (
+      <div className="h-96 flex flex-col items-center justify-center gap-4 text-gray-400">
+        <Loader2 className="animate-spin" size={40} />
+        <p className="text-sm font-bold uppercase tracking-widest">Đang tải thông tin...</p>
+      </div>
+    );
+  }
+
+  if (!user) return null;
 
   return (
     <div className="animate-in fade-in duration-500">
