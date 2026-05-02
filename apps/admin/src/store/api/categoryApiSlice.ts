@@ -10,12 +10,15 @@ export interface Category {
 
 export const categoryApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    getCategories: builder.query<Category[], void>({
-      query: () => '/categories',
+    getCategories: builder.query<{ items: Category[]; total: number; page: number; totalPages: number }, { page?: number; limit?: number } | void>({
+      query: (params) => ({
+        url: '/categories',
+        params: params || undefined,
+      }),
       providesTags: (result) =>
         result
           ? [
-              ...result.map(({ id }) => ({ type: 'Category' as const, id })),
+              ...result.items.map(({ id }) => ({ type: 'Category' as const, id })),
               { type: 'Category', id: 'LIST' },
             ]
           : [{ type: 'Category', id: 'LIST' }],

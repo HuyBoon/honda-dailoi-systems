@@ -68,8 +68,12 @@ export async function getParts(params?: { query?: string; categoryId?: string; v
   };
 }
 
-export async function getCategories() {
-  const res = await fetch(`${API_URL}/categories`, {
+export async function getCategories(params?: { page?: number; limit?: number }) {
+  const searchParams = new URLSearchParams();
+  if (params?.page) searchParams.append('page', params.page.toString());
+  if (params?.limit) searchParams.append('limit', params.limit.toString());
+
+  const res = await fetch(`${API_URL}/categories?${searchParams.toString()}`, {
     next: { revalidate: 3600 },
   });
 
@@ -80,8 +84,12 @@ export async function getCategories() {
   return res.json();
 }
 
-export async function getVehicles() {
-  const res = await fetch(`${API_URL}/vehicles`, {
+export async function getVehicles(params?: { page?: number; limit?: number }) {
+  const searchParams = new URLSearchParams();
+  if (params?.page) searchParams.append('page', params.page.toString());
+  if (params?.limit) searchParams.append('limit', params.limit.toString());
+
+  const res = await fetch(`${API_URL}/vehicles?${searchParams.toString()}`, {
     next: { revalidate: 3600 },
   });
 

@@ -9,13 +9,15 @@ export default async function PartsPage(props: {
   const currentPage = Number(searchParams.page) || 1;
   const pageSize = 9;
   
-  const [partsData, categories, vehicles] = await Promise.all([
+  const [partsData, categoriesData, vehiclesData] = await Promise.all([
     getParts({ ...searchParams, page: currentPage, limit: pageSize }),
-    getCategories(),
-    getVehicles(),
+    getCategories({ limit: 100 }), // Fetch more for filters
+    getVehicles({ limit: 100 }),
   ]);
 
   const parts = partsData.items;
+  const categories = categoriesData.items;
+  const vehicles = vehiclesData.items;
 
   return (
     <div className="container mx-auto px-4 lg:px-8 py-12">

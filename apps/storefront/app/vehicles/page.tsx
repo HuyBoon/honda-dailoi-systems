@@ -3,7 +3,8 @@ import Link from 'next/link';
 import { ArrowRight, Bike } from 'lucide-react';
 
 export default async function VehiclesPage() {
-  const vehicles = await getVehicles();
+  const vehiclesData = await getVehicles({ limit: 100 });
+  const vehicles = vehiclesData.items;
 
   return (
     <div className="container mx-auto px-4 lg:px-8 py-16">

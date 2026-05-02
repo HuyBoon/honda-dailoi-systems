@@ -5,15 +5,22 @@ import {
   useUpdateCategoryMutation, 
   useDeleteCategoryMutation 
 } from '../../store/api/categoryApiSlice';
-import { Button } from '../../components/ui/button';
 import { Loader2 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { CategoryTable } from '../../components/Categories/CategoryTable';
 import { CategoryFormModal } from '../../components/Categories/CategoryFormModal';
 import { PageHeader } from '../../components/PageHeader';
+import { Pagination } from '../../components/Pagination';
 
 export const Categories = () => {
-  const { data: categories, isLoading } = useGetCategoriesQuery();
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 10;
+
+  const { data: categoriesData, isLoading } = useGetCategoriesQuery({
+    page: currentPage,
+    limit: pageSize
+  });
+
   const [createCategory, { isLoading: isCreating }] = useCreateCategoryMutation();
   const [updateCategory, { isLoading: isUpdating }] = useUpdateCategoryMutation();
   const [deleteCategory] = useDeleteCategoryMutation();
@@ -58,7 +65,7 @@ export const Categories = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pb-12">
       <PageHeader 
         title="Danh mục phụ tùng"
         subtitle="Quản lý các loại phụ tùng trong hệ thống"
@@ -66,19 +73,29 @@ export const Categories = () => {
         onActionClick={handleOpenAdd}
       />
 
-      <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-[2rem] border border-gray-100 shadow-sm overflow-hidden">
         {isLoading ? (
           <div className="h-64 flex items-center justify-center">
-            <Loader2 className="w-8 h-8 animate-spin text-red-600" />
+            <Loader2 className="w-8 h-8 animate-spin text-honda-red" />
           </div>
         ) : (
           <CategoryTable 
-            categories={categories || []} 
+            categories={categoriesData?.items || []} 
             onEdit={handleOpenEdit} 
             onDelete={handleDelete} 
           />
         )}
       </div>
+
+      {categoriesData && (
+        <Pagination 
+          currentPage={currentPage}
+          totalPages={categoriesData.totalPages}
+          onPageChange={setCurrentPage}
+          totalItems={categoriesData.total}
+          pageSize={pageSize}
+        />
+      )}
 
       <CategoryFormModal 
         isOpen={isModalOpen} 

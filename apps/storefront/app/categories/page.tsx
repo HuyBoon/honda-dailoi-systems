@@ -3,7 +3,8 @@ import Link from 'next/link';
 import { ArrowRight, Box } from 'lucide-react';
 
 export default async function CategoriesPage() {
-  const categories = await getCategories();
+  const categoriesData = await getCategories({ limit: 100 });
+  const categories = categoriesData.items;
 
   return (
     <div className="container mx-auto px-4 lg:px-8 py-16">

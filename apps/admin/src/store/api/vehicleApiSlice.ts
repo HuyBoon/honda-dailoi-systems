@@ -11,12 +11,15 @@ export interface Vehicle {
 
 export const vehicleApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    getVehicles: builder.query<Vehicle[], void>({
-      query: () => '/vehicles',
+    getVehicles: builder.query<{ items: Vehicle[]; total: number; page: number; totalPages: number }, { page?: number; limit?: number } | void>({
+      query: (params) => ({
+        url: '/vehicles',
+        params: params || undefined,
+      }),
       providesTags: (result) =>
         result
           ? [
-              ...result.map(({ id }) => ({ type: 'Vehicle' as const, id })),
+              ...result.items.map(({ id }) => ({ type: 'Vehicle' as const, id })),
               { type: 'Vehicle', id: 'LIST' },
             ]
           : [{ type: 'Vehicle', id: 'LIST' }],

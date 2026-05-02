@@ -13,8 +13,26 @@ export class CategoriesService {
     });
   }
 
-  async findAll() {
-    return this.prisma.category.findMany();
+  async findAll(page: number = 1, limit: number = 10) {
+    const skip = (page - 1) * limit;
+    const take = Number(limit);
+
+    const [items, total] = await Promise.all([
+      this.prisma.category.findMany({
+        skip,
+        take,
+        orderBy: { name: 'asc' },
+      }),
+      this.prisma.category.count(),
+    ]);
+
+    return {
+      items,
+      total,
+      page: Number(page),
+      limit: take,
+      totalPages: Math.ceil(total / take),
+    };
   }
 
   async findOne(id: string) {

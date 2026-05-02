@@ -10,6 +10,7 @@ import { PageHeader } from '../../components/PageHeader';
 import { InventoryTable } from '../../components/Inventory/InventoryTable';
 import { PartFormModal } from '../../components/Inventory/PartFormModal';
 import { PartHistoryModal } from '../../components/Inventory/PartHistoryModal';
+import { Pagination } from '../../components/Pagination';
 import { 
   Select, 
   SelectContent, 
@@ -128,69 +129,14 @@ export const Inventory = () => {
         onViewHistory={handleViewHistory}
       />
 
-      {/* Pagination UI */}
-      {partsData && partsData.totalPages > 1 && (
-        <div className="flex items-center justify-between bg-white px-6 py-4 rounded-2xl border border-gray-100 shadow-sm">
-          <div className="flex-1 flex justify-between sm:hidden">
-            <Button
-              variant="outline"
-              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-              disabled={currentPage === 1}
-            >
-              Previous
-            </Button>
-            <Button
-              variant="outline"
-              onClick={() => setCurrentPage(prev => Math.min(prev + 1, partsData.totalPages))}
-              disabled={currentPage === partsData.totalPages}
-            >
-              Next
-            </Button>
-          </div>
-          <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-            <div>
-              <p className="text-sm text-gray-500">
-                Hiển thị <span className="font-bold text-gray-900">{(currentPage - 1) * pageSize + 1}</span> đến{' '}
-                <span className="font-bold text-gray-900">
-                  {Math.min(currentPage * pageSize, partsData.total)}
-                </span>{' '}
-                trong tổng số <span className="font-bold text-gray-900">{partsData.total}</span> phụ tùng
-              </p>
-            </div>
-            <div>
-              <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
-                <Button
-                  variant="outline"
-                  className="rounded-l-xl rounded-r-none px-3"
-                  onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                  disabled={currentPage === 1}
-                >
-                  <ChevronLeft className="h-4 w-4" />
-                </Button>
-                
-                {[...Array(partsData.totalPages)].map((_, i) => (
-                  <Button
-                    key={i + 1}
-                    variant={currentPage === i + 1 ? "default" : "outline"}
-                    className={`rounded-none px-4 ${currentPage === i + 1 ? 'bg-honda-red border-honda-red' : ''}`}
-                    onClick={() => setCurrentPage(i + 1)}
-                  >
-                    {i + 1}
-                  </Button>
-                ))}
-
-                <Button
-                  variant="outline"
-                  className="rounded-r-xl rounded-l-none px-3"
-                  onClick={() => setCurrentPage(prev => Math.min(prev + 1, partsData.totalPages))}
-                  disabled={currentPage === partsData.totalPages}
-                >
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
-              </nav>
-            </div>
-          </div>
-        </div>
+      {partsData && (
+        <Pagination 
+          currentPage={currentPage}
+          totalPages={partsData.totalPages}
+          onPageChange={setCurrentPage}
+          totalItems={partsData.total}
+          pageSize={pageSize}
+        />
       )}
 
       <PartFormModal 
