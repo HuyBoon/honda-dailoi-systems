@@ -31,13 +31,16 @@ export const CreateOrderModal = ({ isOpen, onClose, onSubmit, isLoading }: Creat
   const [notes, setNotes] = useState('');
   const [cart, setCart] = useState<any[]>([]);
 
-  const { data: parts, isLoading: isLoadingParts } = useGetPartsQuery({ query: searchTerm || undefined });
+  const { data: partsData, isLoading: isLoadingParts } = useGetPartsQuery({ 
+    q: searchTerm || undefined,
+    limit: 50 // Show top 50 results for order creation
+  });
 
   const filteredParts = useMemo(() => {
-    if (!parts) return [];
+    if (!partsData?.items) return [];
     // Only show parts with stock > 0
-    return parts.filter(p => p.stockQuantity > 0);
-  }, [parts]);
+    return partsData.items.filter(p => p.stockQuantity > 0);
+  }, [partsData]);
 
   const addToCart = (part: any) => {
     const existing = cart.find(item => item.partId === part.id);

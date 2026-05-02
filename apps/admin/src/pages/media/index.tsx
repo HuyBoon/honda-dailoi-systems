@@ -19,7 +19,7 @@ const API_BASE_URL = 'http://localhost:3000';
 
 export const Media = () => {
   const { data: files, isLoading: isLoadingFiles, refetch } = useGetFilesQuery();
-  const { data: parts, isLoading: isLoadingParts } = useGetPartsQuery({});
+  const { data: partsData, isLoading: isLoadingParts } = useGetPartsQuery({ limit: 1000 }); // Get many parts for accurate usage check
   const [deleteFile, { isLoading: isDeleting }] = useDeleteFileMutation();
   
   const [searchTerm, setSearchTerm] = useState('');
@@ -27,9 +27,9 @@ export const Media = () => {
   const [selectedFile, setSelectedFile] = useState<string | null>(null);
 
   const usedImageUrls = useMemo(() => {
-    if (!parts) return new Set<string>();
-    return new Set(parts.map(p => p.imageUrl).filter(Boolean));
-  }, [parts]);
+    if (!partsData?.items) return new Set<string>();
+    return new Set(partsData.items.map(p => p.imageUrl).filter(Boolean));
+  }, [partsData]);
 
   const filteredFiles = useMemo(() => {
     if (!files) return [];

@@ -13,7 +13,7 @@ import { PageHeader } from '../../components/PageHeader';
 
 export const Transactions = () => {
   const { data: transactions, isLoading } = useGetTransactionsQuery();
-  const { data: parts } = useGetPartsQuery({});
+  const { data: partsData } = useGetPartsQuery({ limit: 100 });
   const [createTransaction, { isLoading: isCreating }] = useCreateTransactionMutation();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -50,7 +50,7 @@ export const Transactions = () => {
       <TransactionFormModal 
         isOpen={isModalOpen} 
         onClose={() => setIsModalOpen(false)} 
-        parts={parts || []} 
+        parts={partsData?.items || []} 
         onSubmit={handleSubmit} 
         isLoading={isCreating} 
       />
