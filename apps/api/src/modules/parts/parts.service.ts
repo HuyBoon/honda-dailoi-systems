@@ -32,24 +32,42 @@ export class PartsService {
     });
   }
 
-  findAll(categoryId?: string, query?: string) {
-    return this.prisma.part.findMany({
-      where: {
-        ...(categoryId && { categoryId }),
-        ...(query && {
-          OR: [
-            { name: { contains: query, mode: 'insensitive' } },
-            { partNumber: { contains: query, mode: 'insensitive' } },
-            { barcode: { contains: query, mode: 'insensitive' } },
-          ],
-        }),
-      },
-      include: {
-        category: true,
-        vehicles: true,
-      },
-      orderBy: { createdAt: 'desc' },
-    });
+  async findAll(categoryId?: string, query?: string, page: number = 1, limit: number = 10) {
+    const skip = (page - 1) * limit;
+    const take = Number(limit);
+
+    const where = {
+      ...(categoryId && { categoryId }),
+      ...(query && {
+        OR: [
+          { name: { contains: query, mode: 'insensitive' } },
+          { partNumber: { contains: query, mode: 'insensitive' } },
+          { barcode: { contains: query, mode: 'insensitive' } },
+        ],
+      }),
+    };
+
+    const [items, total] = await Promise.all([
+      this.prisma.part.findMany({
+        where: where as any,
+        include: {
+          category: true,
+          vehicles: true,
+        },
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take,
+      }),
+      this.prisma.part.count({ where: where as any }),
+    ]);
+
+    return {
+      items,
+      total,
+      page: Number(page),
+      limit: take,
+      totalPages: Math.ceil(total / take),
+    };
   }
 
   async findOne(id: string) {

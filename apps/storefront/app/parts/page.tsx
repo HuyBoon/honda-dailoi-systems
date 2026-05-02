@@ -3,15 +3,19 @@ import PartCard from '@/components/PartCard';
 import { Search, Filter, SlidersHorizontal, ChevronDown } from 'lucide-react';
 
 export default async function PartsPage(props: {
-  searchParams: Promise<{ query?: string; categoryId?: string; vehicleId?: string }>;
+  searchParams: Promise<{ query?: string; categoryId?: string; vehicleId?: string; page?: string }>;
 }) {
   const searchParams = await props.searchParams;
+  const currentPage = Number(searchParams.page) || 1;
+  const pageSize = 9;
   
-  const [parts, categories, vehicles] = await Promise.all([
-    getParts(searchParams),
+  const [partsData, categories, vehicles] = await Promise.all([
+    getParts({ ...searchParams, page: currentPage, limit: pageSize }),
     getCategories(),
     getVehicles(),
   ]);
+
+  const parts = partsData.items;
 
   return (
     <div className="container mx-auto px-4 lg:px-8 py-12">
@@ -61,7 +65,7 @@ export default async function PartsPage(props: {
           <div className="flex flex-col md:flex-row justify-between items-center gap-6 p-6 glass rounded-[32px]">
             <div className="flex items-center gap-4">
               <p className="text-sm font-bold text-gray-500 uppercase tracking-widest">
-                Hiển thị <span className="text-gray-900">{parts.length}</span> sản phẩm
+                Hiển thị <span className="text-gray-900">{parts.length}</span> / <span className="text-gray-900">{partsData.total}</span> sản phẩm
               </p>
             </div>
             
@@ -93,18 +97,63 @@ export default async function PartsPage(props: {
               </div>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
-              {parts.map((part: any) => (
-                <PartCard 
-                  key={part.id}
-                  id={part.id}
-                  name={part.name}
-                  partNumber={part.partNumber}
-                  price={Number(part.price)}
-                  imageUrl={part.imageUrl}
-                  isNew={true}
-                />
-              ))}
+            <div className="space-y-12">
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+                {parts.map((part: any) => (
+                  <PartCard 
+                    key={part.id}
+                    id={part.id}
+                    name={part.name}
+                    partNumber={part.partNumber}
+                    price={Number(part.price)}
+                    imageUrl={part.imageUrl}
+                    isNew={true}
+                  />
+                ))}
+              </div>
+
+              {/* Pagination UI */}
+              {partsData.totalPages > 1 && (
+                <div className="flex justify-center items-center gap-2 pt-8">
+                  {currentPage > 1 && (
+                    <a 
+                      href={`/parts?${new URLSearchParams({ ...searchParams, page: (currentPage - 1).toString() })}`}
+                      className="w-12 h-12 bg-white border border-gray-100 rounded-2xl flex items-center justify-center hover:bg-gray-50 transition-all"
+                    >
+                      <ChevronLeft size={20} />
+                    </a>
+                  )}
+
+                  {[...Array(partsData.totalPages)].map((_, i) => {
+                    const p = i + 1;
+                    const isActive = p === currentPage;
+                    return (
+                      <a 
+                        key={p}
+                        href={`/parts?${new URLSearchParams({ ...searchParams, page: p.toString() })}`}
+                        className={`
+                          w-12 h-12 rounded-2xl flex items-center justify-center text-sm font-black transition-all
+                          ${isActive 
+                            ? 'bg-[#CC0000] text-white shadow-lg shadow-red-500/20' 
+                            : 'bg-white border border-gray-100 text-gray-500 hover:border-[#CC0000] hover:text-[#CC0000]'
+                          }
+                        `}
+                      >
+                        {p}
+                      </a>
+                    );
+                  })}
+
+                  {currentPage < partsData.totalPages && (
+                    <a 
+                      href={`/parts?${new URLSearchParams({ ...searchParams, page: (currentPage + 1).toString() })}`}
+                      className="w-12 h-12 bg-white border border-gray-100 rounded-2xl flex items-center justify-center hover:bg-gray-50 transition-all"
+                    >
+                      <ChevronRight size={20} />
+                    </a>
+                  )}
+                </div>
+              )}
             </div>
           )}
         </div>

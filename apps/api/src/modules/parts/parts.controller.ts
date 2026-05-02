@@ -19,8 +19,15 @@ export class PartsController {
   @ApiOperation({ summary: 'List all parts' })
   @ApiQuery({ name: 'categoryId', required: false })
   @ApiQuery({ name: 'q', required: false, description: 'Search by name or part number' })
-  findAll(@Query('categoryId') categoryId?: string, @Query('q') q?: string) {
-    return this.partsService.findAll(categoryId, q);
+  @ApiQuery({ name: 'page', required: false, type: Number })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  findAll(
+    @Query('categoryId') categoryId?: string, 
+    @Query('q') q?: string,
+    @Query('page') page: number = 1,
+    @Query('limit') limit: number = 10,
+  ) {
+    return this.partsService.findAll(categoryId, q, page, limit);
   }
 
   @Get(':id')

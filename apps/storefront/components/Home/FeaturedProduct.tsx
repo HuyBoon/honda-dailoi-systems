@@ -54,7 +54,7 @@ export default function FeaturedProduct() {
           <div className="flex-1 relative group/img">
             <div className="absolute inset-0 bg-[#CC0000]/10 rounded-[3rem] blur-3xl opacity-0 group-hover/img:opacity-100 transition-opacity duration-1000" />
             <img 
-              src="https://images.unsplash.com/photo-1581235720704-06d3acfcba80?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80" 
+              src="/honda_parts_background.png" 
               alt="Featured Part" 
               className="relative z-10 w-full rounded-[3.5rem] shadow-[0_50px_100px_-20px_rgba(0,0,0,0.2)] transition-all duration-1000 group-hover/img:scale-105 group-hover/img:-rotate-3"
             />

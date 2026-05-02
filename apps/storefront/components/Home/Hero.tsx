@@ -7,7 +7,7 @@ export default function Hero() {
     <section className="relative min-h-screen flex items-center pt-20 overflow-hidden bg-black">
       <div className="absolute inset-0 z-0">
         <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/40 to-black z-10" />
-        <div className="absolute inset-0 bg-gradient-to-r from-black via-black/20 to-transparent z-10" />
+        {/* <div className="absolute inset-0 bg-gradient-to-r from-black via-black/20 to-transparent z-10" /> */}
         <div 
           className="w-full h-full bg-[url('/heros.png')] bg-cover bg-center transition-transform duration-[10s] hover:scale-110 scale-105" 
         />

@@ -38,11 +38,13 @@ const formatImageUrl = (url?: string) => {
   return `${API_BASE}${url}`;
 };
 
-export async function getParts(params?: { query?: string; categoryId?: string; vehicleId?: string }) {
+export async function getParts(params?: { query?: string; categoryId?: string; vehicleId?: string; page?: number; limit?: number }) {
   const searchParams = new URLSearchParams();
   if (params?.query) searchParams.append('q', params.query);
   if (params?.categoryId) searchParams.append('categoryId', params.categoryId);
   if (params?.vehicleId) searchParams.append('vehicleId', params.vehicleId);
+  if (params?.page) searchParams.append('page', params.page.toString());
+  if (params?.limit) searchParams.append('limit', params.limit.toString());
 
   const url = `${API_URL}/parts?${searchParams.toString()}`;
   const res = await fetch(url, {
@@ -54,11 +56,16 @@ export async function getParts(params?: { query?: string; categoryId?: string; v
     throw new Error('Failed to fetch parts');
   }
 
-  const parts = await res.json();
-  return parts.map((part: any) => ({
-    ...part,
-    imageUrl: formatImageUrl(part.imageUrl),
-  }));
+  const data = await res.json();
+  
+  // Return the same structure as backend
+  return {
+    ...data,
+    items: data.items.map((part: any) => ({
+      ...part,
+      imageUrl: formatImageUrl(part.imageUrl),
+    }))
+  };
 }
 
 export async function getCategories() {
