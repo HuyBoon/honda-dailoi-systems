@@ -1,19 +1,17 @@
 import { ShieldCheck, Award, Heart, Users, MapPin, Phone, Mail } from 'lucide-react';
+import PageHeader from '@/components/PageHeader';
 
 export default function AboutPage() {
   return (
     <div className="space-y-32 pb-32">
-      {/* Hero Section */}
-      <section className="relative py-24 overflow-hidden bg-[#111111]">
-        <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]" />
-        <div className="container mx-auto px-4 lg:px-8 relative z-10 text-center">
-          <span className="text-[#CC0000] text-xs font-black uppercase tracking-[0.3em] mb-6 block animate-in fade-in slide-in-from-bottom-4">Câu chuyện của chúng tôi</span>
-          <h1 className="text-5xl lg:text-7xl font-black text-white tracking-tighter uppercase leading-tight animate-in fade-in slide-in-from-bottom-6 duration-700">
-            CHUYÊN GIA PHỤ TÙNG <br />
-            <span className="text-[#CC0000]">HONDA CHÍNH HÃNG</span>
-          </h1>
-        </div>
-      </section>
+      <PageHeader 
+        title={<>Câu chuyện <br /> <span className="text-[#CC0000]">Của chúng tôi.</span></>}
+        subtitle="Về Honda Đại Lợi"
+        breadcrumbs={[
+          { label: 'Giới thiệu' }
+        ]}
+        image="https://images.unsplash.com/photo-1558981403-c5f91cbba527?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80"
+      />
 
       {/* Philosophy Section */}
       <section className="container mx-auto px-4 lg:px-8">

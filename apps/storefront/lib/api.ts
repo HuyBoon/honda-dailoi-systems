@@ -61,7 +61,7 @@ export async function getParts(params?: { query?: string; categoryId?: string; v
   // Return the same structure as backend
   return {
     ...data,
-    items: data.items.map((part: any) => ({
+    items: (data.items || []).map((part: any) => ({
       ...part,
       imageUrl: formatImageUrl(part.imageUrl),
     }))

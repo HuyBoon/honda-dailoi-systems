@@ -38,6 +38,12 @@ body {
   border: 1px solid color-mix(in srgb, white 20%, transparent);
 }
 
+@utility glass-dark {
+  background-color: color-mix(in srgb, black 70%, transparent);
+  backdrop-filter: blur(12px);
+  border: 1px solid color-mix(in srgb, white 10%, transparent);
+}
+
 @utility honda-btn {
   padding: 0.75rem 1.5rem;
   background-color: var(--color-honda-red);

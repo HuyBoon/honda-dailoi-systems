@@ -1,182 +1,95 @@
 import { getParts, getCategories, getVehicles } from '@/lib/api';
 import PartCard from '@/components/PartCard';
-import { Search, Filter, SlidersHorizontal, ChevronDown } from 'lucide-react';
+import PageHeader from '@/components/PageHeader';
+import PartsSidebar from '@/components/Parts/PartsSidebar';
+import PartsToolbar from '@/components/Parts/PartsToolbar';
+import PartsPagination from '@/components/Parts/PartsPagination';
+import { Search } from 'lucide-react';
+import Link from 'next/link';
 
 export default async function PartsPage(props: {
-  searchParams: Promise<{ query?: string; categoryId?: string; vehicleId?: string; page?: string }>;
+  searchParams: Promise<{ query?: string; categoryId?: string; vehicleId?: string; page?: string; sort?: string }>;
 }) {
   const searchParams = await props.searchParams;
   const currentPage = Number(searchParams.page) || 1;
-  const pageSize = 9;
+  const pageSize = 12;
   
   const [partsData, categoriesData, vehiclesData] = await Promise.all([
     getParts({ ...searchParams, page: currentPage, limit: pageSize }),
-    getCategories({ limit: 100 }), // Fetch more for filters
+    getCategories({ limit: 100 }), 
     getVehicles({ limit: 100 }),
   ]);
 
-  const parts = partsData.items;
-  const categories = categoriesData.items;
-  const vehicles = vehiclesData.items;
+  const parts = partsData.items || [];
+  const categories = categoriesData.items || [];
+  const vehicles = vehiclesData.items || [];
 
   return (
-    <div className="container mx-auto px-4 lg:px-8 py-12">
-      <div className="flex flex-col lg:flex-row gap-12">
-        {/* SIDEBAR FILTERS */}
-        <aside className="w-full lg:w-72 space-y-10">
-          <div>
-            <h3 className="text-lg font-black uppercase tracking-widest mb-6 flex items-center gap-2">
-              <Filter size={18} className="text-[#CC0000]" /> Danh mục
-            </h3>
-            <div className="space-y-2">
-              <FilterLink href="/parts" active={!searchParams.categoryId}>Tất cả sản phẩm</FilterLink>
-              {categories.map((cat: any) => (
-                <FilterLink 
-                  key={cat.id} 
-                  href={`/parts?categoryId=${cat.id}`} 
-                  active={searchParams.categoryId === cat.id}
-                >
-                  {cat.name}
-                </FilterLink>
-              ))}
-            </div>
-          </div>
+    <div className="min-h-screen bg-[#FDFDFD]">
+      <PageHeader 
+        title={<>Hệ thống <span className="text-[#CC0000]">Phụ tùng</span> <br /> Chính hãng.</>}
+        subtitle="Trung tâm phụ tùng"
+        breadcrumbs={[
+          { label: 'Phụ tùng' }
+        ]}
+      />
 
-          <div>
-            <h3 className="text-lg font-black uppercase tracking-widest mb-6 flex items-center gap-2">
-              <SlidersHorizontal size={18} className="text-[#CC0000]" /> Dòng xe
-            </h3>
-            <div className="space-y-2">
-              <FilterLink href="/parts" active={!searchParams.vehicleId}>Tất cả dòng xe</FilterLink>
-              {vehicles.map((v: any) => (
-                <FilterLink 
-                  key={v.id} 
-                  href={`/parts?vehicleId=${v.id}`} 
-                  active={searchParams.vehicleId === v.id}
-                >
-                  {v.modelName}
-                </FilterLink>
-              ))}
-            </div>
-          </div>
-        </aside>
+      <div className="container mx-auto px-4 lg:px-8 -mt-8 relative z-20 pb-32">
+        <div className="flex flex-col lg:flex-row gap-8">
+          {/* SIDEBAR FILTERS */}
+          <PartsSidebar 
+            categories={categories}
+            vehicles={vehicles}
+            searchParams={searchParams}
+          />
 
-        {/* MAIN CONTENT */}
-        <div className="flex-1 space-y-8">
-          {/* Top Bar */}
-          <div className="flex flex-col md:flex-row justify-between items-center gap-6 p-6 glass rounded-[32px]">
-            <div className="flex items-center gap-4">
-              <p className="text-sm font-bold text-gray-500 uppercase tracking-widest">
-                Hiển thị <span className="text-gray-900">{parts.length}</span> / <span className="text-gray-900">{partsData.total}</span> sản phẩm
-              </p>
-            </div>
-            
-            <div className="flex gap-4 w-full md:w-auto">
-              <div className="relative flex-1 md:w-80">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                <input 
-                  type="text" 
-                  placeholder="Tìm kiếm phụ tùng..."
-                  defaultValue={searchParams.query || ''}
-                  className="w-full pl-12 pr-4 py-3 bg-white border border-gray-100 rounded-2xl text-sm focus:ring-2 focus:ring-[#CC0000]/20 outline-none transition-all"
+          {/* MAIN CONTENT */}
+          <div className="flex-1 space-y-8">
+            {/* Toolbar */}
+            <PartsToolbar 
+              query={searchParams.query}
+              total={partsData.total}
+            />
+
+            {/* Results Grid */}
+            {parts.length === 0 ? (
+              <div className="bg-white rounded-[4rem] border border-gray-100 border-dashed py-32 flex flex-col items-center justify-center space-y-6">
+                <div className="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center text-gray-200">
+                  <Search size={48} />
+                </div>
+                <div className="text-center space-y-2">
+                  <h3 className="text-2xl font-black text-gray-900 uppercase">Không tìm thấy kết quả</h3>
+                  <p className="text-gray-400 text-sm font-medium">Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm khác.</p>
+                </div>
+                <Link href="/parts" className="px-10 py-4 bg-black text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-[#CC0000] transition-all">Xóa tất cả bộ lọc</Link>
+              </div>
+            ) : (
+              <div className="space-y-16">
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-8">
+                  {parts.map((part: any) => (
+                    <PartCard 
+                      key={part.id}
+                      id={part.id}
+                      name={part.name}
+                      partNumber={part.partNumber}
+                      price={Number(part.price)}
+                      imageUrl={part.imageUrl}
+                      isNew={true}
+                    />
+                  ))}
+                </div>
+
+                {/* Pagination */}
+                <PartsPagination 
+                  currentPage={currentPage}
+                  totalPages={partsData.totalPages}
+                  searchParams={searchParams}
                 />
               </div>
-              <button className="px-6 py-3 bg-white border border-gray-100 rounded-2xl flex items-center gap-2 text-sm font-bold hover:bg-gray-50 transition-all">
-                Mới nhất <ChevronDown size={16} />
-              </button>
-            </div>
+            )}
           </div>
-
-          {/* Results Grid */}
-          {parts.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-32 space-y-6">
-              <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center text-gray-300">
-                <Search size={48} />
-              </div>
-              <div className="text-center">
-                <h3 className="text-xl font-black text-gray-900">Không tìm thấy sản phẩm</h3>
-                <p className="text-gray-400 text-sm">Vui lòng thử lại với từ khóa khác hoặc bộ lọc khác.</p>
-              </div>
-            </div>
-          ) : (
-            <div className="space-y-12">
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
-                {parts.map((part: any) => (
-                  <PartCard 
-                    key={part.id}
-                    id={part.id}
-                    name={part.name}
-                    partNumber={part.partNumber}
-                    price={Number(part.price)}
-                    imageUrl={part.imageUrl}
-                    isNew={true}
-                  />
-                ))}
-              </div>
-
-              {/* Pagination UI */}
-              {partsData.totalPages > 1 && (
-                <div className="flex justify-center items-center gap-2 pt-8">
-                  {currentPage > 1 && (
-                    <a 
-                      href={`/parts?${new URLSearchParams({ ...searchParams, page: (currentPage - 1).toString() })}`}
-                      className="w-12 h-12 bg-white border border-gray-100 rounded-2xl flex items-center justify-center hover:bg-gray-50 transition-all"
-                    >
-                      <ChevronLeft size={20} />
-                    </a>
-                  )}
-
-                  {[...Array(partsData.totalPages)].map((_, i) => {
-                    const p = i + 1;
-                    const isActive = p === currentPage;
-                    return (
-                      <a 
-                        key={p}
-                        href={`/parts?${new URLSearchParams({ ...searchParams, page: p.toString() })}`}
-                        className={`
-                          w-12 h-12 rounded-2xl flex items-center justify-center text-sm font-black transition-all
-                          ${isActive 
-                            ? 'bg-[#CC0000] text-white shadow-lg shadow-red-500/20' 
-                            : 'bg-white border border-gray-100 text-gray-500 hover:border-[#CC0000] hover:text-[#CC0000]'
-                          }
-                        `}
-                      >
-                        {p}
-                      </a>
-                    );
-                  })}
-
-                  {currentPage < partsData.totalPages && (
-                    <a 
-                      href={`/parts?${new URLSearchParams({ ...searchParams, page: (currentPage + 1).toString() })}`}
-                      className="w-12 h-12 bg-white border border-gray-100 rounded-2xl flex items-center justify-center hover:bg-gray-50 transition-all"
-                    >
-                      <ChevronRight size={20} />
-                    </a>
-                  )}
-                </div>
-              )}
-            </div>
-          )}
         </div>
       </div>
     </div>
-  );
-}
-
-function FilterLink({ href, children, active }: { href: string; children: React.ReactNode; active?: boolean }) {
-  return (
-    <a 
-      href={href} 
-      className={`
-        block px-4 py-2 rounded-xl text-sm font-bold transition-all
-        ${active 
-          ? 'bg-[#CC0000] text-white shadow-lg shadow-red-500/20 translate-x-2' 
-          : 'text-gray-500 hover:text-[#CC0000] hover:bg-red-50 hover:translate-x-1'
-        }
-      `}
-    >
-      {children}
-    </a>
   );
 }
