@@ -6,11 +6,13 @@ import { Search, ShoppingCart, Menu, X, User as UserIcon, LogOut, Package, Setti
 import { useCartStore } from '@/store/useCartStore';
 import { useAuthStore } from '@/store/useAuthStore';
 import { MobileMenuOverlay } from './MobileMenuOverlay';
+import { SearchModal } from './SearchModal';
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false); 
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   
   const profileRef = useRef<HTMLDivElement>(null);
@@ -94,15 +96,17 @@ export default function Navbar() {
           {/* Action Icons */}
           <div className="flex items-center gap-4">
             
-            {/* Search Input */}
-            <div className="hidden md:flex relative group w-56">
-              <input 
-                type="text" 
-                placeholder="Tìm phụ tùng..."
-                className="pl-10 pr-4 py-2 w-full bg-gray-100 border border-transparent rounded-full text-sm outline-none transition-all focus:bg-white focus:border-[#CC0000]/30 focus:shadow-sm focus:ring-2 focus:ring-[#CC0000]/10"
-              />
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#CC0000] transition-colors" size={18} />
-            </div>
+            {/* Search Trigger */}
+            <button 
+              onClick={() => setIsSearchOpen(true)}
+              className="hidden md:flex items-center gap-3 px-4 py-2 w-56 bg-gray-100 hover:bg-gray-200/50 border border-transparent rounded-full transition-all group"
+            >
+              <Search className="text-gray-400 group-hover:text-[#CC0000] transition-colors" size={18} />
+              <span className="text-sm font-bold text-gray-400 group-hover:text-gray-600 transition-colors">Tìm phụ tùng...</span>
+              <kbd className="ml-auto flex items-center gap-1 px-1.5 py-0.5 bg-white border border-gray-200 rounded text-[10px] font-black text-gray-400 opacity-60">
+                <span className="text-[12px]">⌘</span>K
+              </kbd>
+            </button>
 
             <button 
               onClick={openCart}
@@ -206,6 +210,11 @@ export default function Navbar() {
         onClose={() => setIsMenuOpen(false)} 
         openCart={openCart} 
         user={user} 
+      />
+
+      <SearchModal 
+        isOpen={isSearchOpen} 
+        onClose={() => setIsSearchOpen(false)} 
       />
       
     </nav>
