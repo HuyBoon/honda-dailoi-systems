@@ -1,9 +1,10 @@
 @import "tailwindcss";
 
 @theme {
-  --color-honda-red: #CC0000;
+ --color-honda-red: #CC0000;
   --color-honda-black: #111111;
   --color-honda-gray: #F5F5F7;
+  --color-honda-blue: #00509E;
 }
 
 :root {

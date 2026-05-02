@@ -102,6 +102,39 @@ export class OrdersService {
     });
   }
 
+  async findByCustomerPhone(phone: string) {
+    return this.prisma.order.findMany({
+      where: {
+        customer: {
+          phone: phone,
+        },
+      },
+      include: {
+        customer: true,
+        items: { include: { part: true } },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
+  async findByUserId(userId: string) {
+    const user: any = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { customerId: true } as any,
+    });
+
+    if (!user?.customerId) return [];
+
+    return this.prisma.order.findMany({
+      where: { customerId: user.customerId },
+      include: {
+        customer: true,
+        items: { include: { part: true } },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
   async findOne(id: string) {
     const order = await this.prisma.order.findUnique({
       where: { id },

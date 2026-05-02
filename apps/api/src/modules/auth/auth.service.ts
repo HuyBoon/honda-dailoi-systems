@@ -36,12 +36,31 @@ export class AuthService {
     const exists = await this.usersService.findOne(registerDto.email);
     if (exists) throw new ConflictException('User already exists');
 
-    const user = await this.usersService.create({
-      email: registerDto.email,
-      password: registerDto.password,
-    });
+    // Use transaction to create both User and Customer
+    return this.usersService.prisma.$transaction(async (tx) => {
+      const hashedPassword = await bcrypt.hash(registerDto.password, 10);
+      
+      // 1. Create Customer first
+      const customer = await tx.customer.create({
+        data: {
+          name: registerDto.name,
+          phone: registerDto.phone,
+          address: registerDto.address,
+        },
+      });
 
-    const { password, ...result } = user;
-    return result;
+      // 2. Create User and link to Customer
+      const user = await tx.user.create({
+        data: {
+          email: registerDto.email,
+          password: hashedPassword,
+          role: 'USER',
+          customerId: customer.id,
+        } as any,
+      });
+
+      const { password, ...result } = user;
+      return { ...result, customer };
+    });
   }
 }

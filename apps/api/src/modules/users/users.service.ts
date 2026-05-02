@@ -5,7 +5,7 @@ import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
-  constructor(private prisma: PrismaService) {}
+  constructor(public prisma: PrismaService) {}
 
   async findAll(): Promise<Omit<User, 'password'>[]> {
     return this.prisma.user.findMany({
@@ -13,6 +13,7 @@ export class UsersService {
         id: true,
         email: true,
         role: true,
+        customerId: true,
         createdAt: true,
         updatedAt: true,
       },

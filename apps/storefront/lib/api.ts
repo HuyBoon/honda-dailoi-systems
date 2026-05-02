@@ -1,5 +1,36 @@
 const API_BASE = 'http://127.0.0.1:3000';
-const API_URL = `${API_BASE}/api`;
+const API_URL = process.env.NEXT_PUBLIC_API_URL || `${API_BASE}/api`;
+// Sửa lại 2 hàm này trong file lib/api.ts
+
+export async function login(data: any) {
+  const res = await fetch(`${API_URL}/auth/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+  
+  if (!res.ok) {
+    // Lấy chính xác thông báo lỗi từ Backend trả về
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.message || 'Đăng nhập thất bại');
+  }
+  return res.json();
+}
+
+export async function register(data: any) {
+  const res = await fetch(`${API_URL}/auth/register`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+  
+  if (!res.ok) {
+    // Lấy chính xác thông báo lỗi từ Backend trả về
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.message || 'Đăng ký thất bại');
+  }
+  return res.json();
+}
 
 const formatImageUrl = (url?: string) => {
   if (!url) return undefined;
@@ -82,6 +113,22 @@ export async function createMoMoPayment(data: { orderId: string; amount: number;
   return res.json();
 }
 
+export async function getOrdersByPhone(phone: string) {
+  const res = await fetch(`${API_URL}/orders/customer/${phone}`);
+  if (!res.ok) throw new Error('Failed to fetch orders');
+  return res.json();
+}
+
+export async function getMyOrders(token: string) {
+  const res = await fetch(`${API_URL}/orders/me`, {
+    headers: {
+      'Authorization': `Bearer ${token}`,
+    },
+  });
+  if (!res.ok) throw new Error('Failed to fetch my orders');
+  return res.json();
+}
+
 export async function createOrder(orderData: {
   customerName: string;
   customerPhone: string;
@@ -103,5 +150,61 @@ export async function createOrder(orderData: {
     throw new Error(errorData.message || 'Failed to submit order');
   }
 
+  return res.json();
+}
+
+// Cart
+export async function getCart(token: string) {
+  const res = await fetch(`${API_URL}/cart`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) {
+    console.error(`Cart fetch failed with status: ${res.status}`);
+    throw new Error(`Failed to fetch cart (${res.status})`);
+  }
+  return res.json();
+}
+
+export async function addToCart(token: string, partId: string, quantity: number) {
+  const res = await fetch(`${API_URL}/cart/items`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ partId, quantity }),
+  });
+  if (!res.ok) throw new Error('Failed to add to cart');
+  return res.json();
+}
+
+export async function updateCartItem(token: string, partId: string, quantity: number) {
+  const res = await fetch(`${API_URL}/cart/items/${partId}`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ quantity }),
+  });
+  if (!res.ok) throw new Error('Failed to update cart');
+  return res.json();
+}
+
+export async function removeFromCart(token: string, partId: string) {
+  const res = await fetch(`${API_URL}/cart/items/${partId}`, {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error('Failed to remove from cart');
+  return res.json();
+}
+
+export async function clearBackendCart(token: string) {
+  const res = await fetch(`${API_URL}/cart`, {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error('Failed to clear cart');
   return res.json();
 }

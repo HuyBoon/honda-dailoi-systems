@@ -1,5 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { addToCart, updateCartItem, removeFromCart, clearBackendCart, getCart } from '@/lib/api';
+import { useAuthStore } from './useAuthStore';
 
 export interface CartItem {
   id: string;
@@ -13,10 +15,11 @@ export interface CartItem {
 interface CartStore {
   items: CartItem[];
   isOpen: boolean;
-  addItem: (item: Omit<CartItem, 'quantity'>) => void;
-  removeItem: (id: string) => void;
-  updateQuantity: (id: string, quantity: number) => void;
-  clearCart: () => void;
+  addItem: (item: Omit<CartItem, 'quantity'>) => Promise<void>;
+  removeItem: (id: string) => Promise<void>;
+  updateQuantity: (id: string, quantity: number) => Promise<void>;
+  clearCart: () => Promise<void>;
+  syncWithBackend: () => Promise<void>;
   toggleCart: () => void;
   closeCart: () => void;
   openCart: () => void;
@@ -24,34 +27,102 @@ interface CartStore {
 
 export const useCartStore = create<CartStore>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       items: [],
       isOpen: false,
       
-      addItem: (item) => set((state) => {
-        const existingItem = state.items.find((i) => i.id === item.id);
+      addItem: async (item) => {
+        const { token } = useAuthStore.getState();
+        const existingItem = get().items.find((i) => i.id === item.id);
+        
+        if (token) {
+          try {
+            await addToCart(token, item.id, 1);
+          } catch (err) {
+            console.error('Sync failed:', err);
+          }
+        }
+
         if (existingItem) {
-          return {
+          set((state) => ({
             items: state.items.map((i) => 
               i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i
             ),
             isOpen: true,
-          };
+          }));
+        } else {
+          set((state) => ({ 
+            items: [...state.items, { ...item, quantity: 1 }], 
+            isOpen: true 
+          }));
         }
-        return { items: [...state.items, { ...item, quantity: 1 }], isOpen: true };
-      }),
+      },
 
-      removeItem: (id) => set((state) => ({
-        items: state.items.filter((i) => i.id !== id)
-      })),
+      removeItem: async (id) => {
+        const { token } = useAuthStore.getState();
+        if (token) {
+          try {
+            await removeFromCart(token, id);
+          } catch (err) {
+            console.error('Sync failed:', err);
+          }
+        }
 
-      updateQuantity: (id, quantity) => set((state) => ({
-        items: state.items.map((i) => 
-          i.id === id ? { ...i, quantity: Math.max(1, quantity) } : i
-        )
-      })),
+        set((state) => ({
+          items: state.items.filter((i) => i.id !== id)
+        }));
+      },
 
-      clearCart: () => set({ items: [] }),
+      updateQuantity: async (id, quantity) => {
+        const { token } = useAuthStore.getState();
+        if (token) {
+          try {
+            await updateCartItem(token, id, quantity);
+          } catch (err) {
+            console.error('Sync failed:', err);
+          }
+        }
+
+        set((state) => ({
+          items: state.items.map((i) => 
+            i.id === id ? { ...i, quantity: Math.max(1, quantity) } : i
+          )
+        }));
+      },
+
+      clearCart: async () => {
+        const { token } = useAuthStore.getState();
+        if (token) {
+          try {
+            await clearBackendCart(token);
+          } catch (err) {
+            console.error('Sync failed:', err);
+          }
+        }
+        set({ items: [] });
+      },
+
+      syncWithBackend: async () => {
+        const { token } = useAuthStore.getState();
+        if (!token) return;
+
+        try {
+          const backendCart = await getCart(token);
+          if (backendCart && backendCart.items) {
+            const items = backendCart.items.map((bi: any) => ({
+              id: bi.part.id,
+              name: bi.part.name,
+              price: Number(bi.part.price),
+              imageUrl: bi.part.imageUrl,
+              partNumber: bi.part.partNumber,
+              quantity: bi.quantity,
+            }));
+            set({ items });
+          }
+        } catch (err) {
+          console.error('Sync failed:', err);
+        }
+      },
       
       toggleCart: () => set((state) => ({ isOpen: !state.isOpen })),
       closeCart: () => set({ isOpen: false }),

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, UseGuards, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, UseGuards, Query, Request } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
@@ -24,6 +24,20 @@ export class OrdersController {
   @ApiOperation({ summary: 'List all orders (Staff only)' })
   findAll() {
     return this.ordersService.findAll();
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @Get('me')
+  @ApiOperation({ summary: 'Get orders for the logged-in customer' })
+  async findMyOrders(@Request() req) {
+    return this.ordersService.findByUserId(req.user.id);
+  }
+
+  @Get('customer/:phone')
+  @ApiOperation({ summary: 'Get orders by customer phone number (Tracking)' })
+  async findByPhone(@Param('phone') phone: string) {
+    return this.ordersService.findByCustomerPhone(phone);
   }
 
   @UseGuards(JwtAuthGuard)

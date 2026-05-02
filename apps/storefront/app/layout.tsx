@@ -22,12 +22,12 @@ export default function RootLayout({
   return (
     <html lang="vi">
       <body className={`${inter.className} bg-white text-gray-900`}>
-        <Toaster position="top-right" />
+        <Toaster position="top-right" />      
         <Navbar />
-        <CartSidebar />
-        <main className="min-h-screen">
+        <CartSidebar />     
+        <main className="min-h-screen pt-28">
           {children}
-        </main>
+        </main>       
         <Footer />
       </body>
     </html>

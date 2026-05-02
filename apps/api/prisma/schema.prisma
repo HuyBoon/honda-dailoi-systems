@@ -40,13 +40,18 @@ enum PaymentStatus {
 // --- MODELS ---
 
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
+  id        String    @id @default(uuid())
+  email     String    @unique
   password  String
-  role      Role     @default(USER)
-  orders    Order[]  // Staff who created the order
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  role      Role      @default(USER)
+  
+  // Link to customer profile for storefront users
+  customerId String?   @unique
+  customer   Customer? @relation(fields: [customerId], references: [id])
+
+  orders    Order[]   // Staff who created the order
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 }
 
 
@@ -100,8 +105,9 @@ model Part {
   // One-to-Many relation: A part has many inventory transactions
   transactions  InventoryTransaction[]
 
-  // Items in orders
+  // Items in orders and carts
   orderItems    OrderItem[]
+  cartItems     CartItem[]
 
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
@@ -129,24 +135,60 @@ model Customer {
   name      String
   phone     String   @unique
   address   String?
+  
+  // Identity link
+  user      User?
+  
+  // Shopping activity
+  cart      Cart?
   orders    Order[]
+  
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
+model Cart {
+  id          String     @id @default(uuid())
+  customerId  String     @unique
+  customer    Customer   @relation(fields: [customerId], references: [id])
+  
+  items       CartItem[]
+  
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+model CartItem {
+  id        String   @id @default(uuid())
+  quantity  Int
+  
+  cartId    String
+  cart      Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  
+  partId    String
+  part      Part     @relation(fields: [partId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([cartId, partId]) // Prevent duplicate parts in the same cart
+}
+
 model Order {
   id          String      @id @default(uuid())
-  orderNumber String      @unique // e.g. HD-20240501-001
-  status          OrderStatus   @default(PENDING)
-  totalAmount     Decimal       @db.Decimal(12, 2)
-  notes           String?
+  orderNumber String      @unique
+  status      OrderStatus @default(PENDING)
+  totalAmount Decimal     @db.Decimal(12, 2)
+  notes       String?
   
   paymentMethod   PaymentMethod @default(COD)
   paymentStatus   PaymentStatus @default(PENDING)
 
+  // Link to the buyer profile
   customerId  String?
   customer    Customer?   @relation(fields: [customerId], references: [id])
 
+  // Optional: Staff who handled the order
   staffId     String?
   staff       User?       @relation(fields: [staffId], references: [id])
 
@@ -159,7 +201,7 @@ model Order {
 model OrderItem {
   id        String  @id @default(uuid())
   quantity  Int
-  price     Decimal @db.Decimal(10, 2) // Price at the time of sale
+  price     Decimal @db.Decimal(10, 2)
 
   orderId   String
   order     Order   @relation(fields: [orderId], references: [id])
