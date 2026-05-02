@@ -33,7 +33,7 @@ export const Inventory = () => {
   const [editingPart, setEditingPart] = useState<any>(null);
   const [viewingHistoryPart, setViewingHistoryPart] = useState<any>(null);
 
-  const { data: categories } = useGetCategoriesQuery();
+  const { data: categoriesData } = useGetCategoriesQuery();
   const { data: partsData, isLoading } = useGetPartsQuery({ 
     categoryId: selectedCategory === 'all' ? undefined : selectedCategory,
     q: searchTerm || undefined,
@@ -113,7 +113,7 @@ export const Inventory = () => {
             </SelectTrigger>
             <SelectContent className="bg-white border-gray-100 shadow-xl">
               <SelectItem value="all">Tất cả danh mục</SelectItem>
-              {categories?.map(cat => (
+              {categoriesData?.items?.map(cat => (
                 <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
               ))}
             </SelectContent>
@@ -143,7 +143,7 @@ export const Inventory = () => {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         editingPart={editingPart}
-        categories={categories || []}
+        categories={categoriesData?.items || []}
         onSubmit={handleFormSubmit}
         isLoading={isCreating || isUpdating}
       />

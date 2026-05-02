@@ -46,7 +46,7 @@ export const PartFormModal = ({
   onSubmit,
   isLoading
 }: PartFormModalProps) => {
-  const { data: vehicles } = useGetVehiclesQuery();
+  const { data: vehiclesData } = useGetVehiclesQuery({ limit: 100 });
   const [uploadThumbnail, { isLoading: isUploading }] = useUploadThumbnailMutation();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isMediaPickerOpen, setIsMediaPickerOpen] = useState(false);
@@ -325,7 +325,7 @@ export const PartFormModal = ({
             <div className="space-y-4 pt-4 border-t border-gray-100">
               <Label className="text-xs font-bold text-gray-500 uppercase tracking-wider block">Dòng xe tương thích</Label>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3 max-h-[160px] overflow-y-auto pr-2 custom-scrollbar">
-                {vehicles?.map((vehicle) => (
+                {vehiclesData?.items?.map((vehicle) => (
                   <label 
                     key={vehicle.id} 
                     className={`flex items-center gap-2 p-3 rounded-xl border cursor-pointer transition-all duration-200 ${
