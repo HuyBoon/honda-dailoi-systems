@@ -26,6 +26,8 @@ const RoleBadge = ({ role }: { role: Role }) => {
       return <Badge className="bg-red-100 text-red-700 border-none flex gap-1 items-center"><Shield size={12} /> Admin</Badge>;
     case Role.MANAGER:
       return <Badge className="bg-blue-100 text-blue-700 border-none flex gap-1 items-center"><UserCog size={12} /> Manager</Badge>;
+    case Role.CUSTOMER:
+      return <Badge className="bg-green-100 text-green-700 border-none flex gap-1 items-center"><UserIcon size={12} /> Khách hàng</Badge>;
     default:
       return <Badge variant="outline" className="text-gray-500 flex gap-1 items-center"><UserIcon size={12} /> Staff</Badge>;
   }

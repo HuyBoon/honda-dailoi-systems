@@ -10,6 +10,7 @@ import { Dashboard } from '../pages/Dashboard';
 import { Vehicles } from '../pages/vehicles/index';
 import { Transactions } from '../pages/transactions/index';
 import { Users } from '../pages/users/index';
+import { Customers } from '../pages/customers/index';
 import { Settings } from '../pages/settings/index';
 import { Orders } from '../pages/orders/index';
 import { Media } from '../pages/media/index';
@@ -43,6 +44,10 @@ export const router = createBrowserRouter([
           {
             path: 'users',
             element: <Users />,
+          },
+          {
+            path: 'customers',
+            element: <Customers />,
           },
           {
             path: 'inventory',

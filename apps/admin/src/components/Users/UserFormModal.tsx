@@ -37,7 +37,7 @@ export const UserFormModal = ({
 }: UserFormModalProps) => {
   const [formData, setFormData] = useState({ 
     email: '', 
-    role: Role.USER as Role,
+    role: Role.CUSTOMER as Role,
     password: ''
   });
 
@@ -49,7 +49,7 @@ export const UserFormModal = ({
         password: ''
       });
     } else {
-      setFormData({ email: '', role: Role.USER, password: '' });
+      setFormData({ email: '', role: Role.CUSTOMER, password: '' });
     }
   }, [editingUser, isOpen]);
 
@@ -100,7 +100,7 @@ export const UserFormModal = ({
                   <SelectValue placeholder="Chọn vai trò" />
                 </SelectTrigger>
                 <SelectContent className="bg-white border-gray-100">
-                  <SelectItem value={Role.USER}>Staff (Nhân viên)</SelectItem>
+                  <SelectItem value={Role.CUSTOMER}>Customer (Khách hàng)</SelectItem>
                   <SelectItem value={Role.MANAGER}>Manager (Quản lý)</SelectItem>
                   <SelectItem value={Role.ADMIN}>Admin (Quản trị viên)</SelectItem>
                   {formData.role === Role.SUPER_ADMIN && (

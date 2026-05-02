@@ -4,6 +4,7 @@ import { UsersService } from '@/modules/users/users.service';
 import * as bcrypt from 'bcrypt';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
+import { Role } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
@@ -54,9 +55,9 @@ export class AuthService {
         data: {
           email: registerDto.email,
           password: hashedPassword,
-          role: 'USER',
+          role: Role.CUSTOMER,
           customerId: customer.id,
-        } as any,
+        },
       });
 
       const { password, ...result } = user;

@@ -33,6 +33,7 @@ const MENU_GROUPS = [
     header: 'HỆ THỐNG', 
     items: [
       { path: '/users', label: 'Quản lý nhân viên', icon: Users },
+      { path: '/customers', label: 'Quản lý khách hàng', icon: Users },
       { path: '/media', label: 'Quản lý hình ảnh', icon: Image },
       { path: '/settings', label: 'Cài đặt', icon: Settings },
     ]

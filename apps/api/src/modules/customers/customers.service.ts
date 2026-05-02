@@ -31,4 +31,40 @@ export class CustomersService {
       data,
     });
   }
+
+  async findAll(page: number = 1, limit: number = 10) {
+    const skip = (page - 1) * limit;
+    const take = Number(limit);
+
+    const [items, total] = await Promise.all([
+      this.prisma.customer.findMany({
+        skip,
+        take,
+        include: {
+          user: {
+            select: {
+              email: true,
+              role: true,
+            }
+          }
+        },
+        orderBy: { createdAt: 'desc' },
+      }),
+      this.prisma.customer.count(),
+    ]);
+
+    return {
+      items,
+      total,
+      page: Number(page),
+      limit: take,
+      totalPages: Math.ceil(total / take),
+    };
+  }
+
+  async remove(id: string) {
+    return this.prisma.customer.delete({
+      where: { id },
+    });
+  }
 }

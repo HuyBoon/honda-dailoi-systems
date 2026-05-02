@@ -1,9 +1,9 @@
 import { apiSlice } from './apiSlice';
 
-export type Role = 'USER' | 'ADMIN' | 'SUPER_ADMIN' | 'MANAGER';
+export type Role = 'CUSTOMER' | 'ADMIN' | 'SUPER_ADMIN' | 'MANAGER';
 
 export const Role = {
-  USER: 'USER' as Role,
+  CUSTOMER: 'CUSTOMER' as Role,
   ADMIN: 'ADMIN' as Role,
   SUPER_ADMIN: 'SUPER_ADMIN' as Role,
   MANAGER: 'MANAGER' as Role,
