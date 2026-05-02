@@ -103,7 +103,7 @@ export class CartsService {
     const customerId = await this.getCustomerId(userId);
     const cart = await this.getOrCreateCart(customerId);
 
-    return this.prisma.$transaction(async (tx) => {
+    return this.prisma.$transaction(async (tx: any) => {
       for (const item of items) {
         const existingItem = await tx.cartItem.findUnique({
           where: {
