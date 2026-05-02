@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { Search, ShoppingCart, Menu, X, User as UserIcon, LogOut, Package, Settings } from 'lucide-react';
+import { usePathname } from 'next/navigation';
+import { Search, ShoppingCart, Menu, X, User as UserIcon, LogOut, Package, Settings, LayoutDashboard } from 'lucide-react';
 import { useCartStore } from '@/store/useCartStore';
 import { useAuthStore } from '@/store/useAuthStore';
 import { MobileMenuOverlay } from './MobileMenuOverlay';

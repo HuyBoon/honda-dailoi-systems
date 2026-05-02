@@ -5,18 +5,16 @@ import Link from 'next/link';
 export default function Hero() {
   return (
     <section className="relative min-h-screen flex items-center pt-20 overflow-hidden bg-black">
-      {/* Background with Parallax effect */}
       <div className="absolute inset-0 z-0">
         <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/40 to-black z-10" />
         <div className="absolute inset-0 bg-gradient-to-r from-black via-black/20 to-transparent z-10" />
         <div 
-          className="w-full h-full bg-[url('https://images.unsplash.com/photo-1558981403-c5f91cbba527?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80')] bg-cover bg-center transition-transform duration-[10s] hover:scale-110 scale-105" 
+          className="w-full h-full bg-[url('/heros.png')] bg-cover bg-center transition-transform duration-[10s] hover:scale-110 scale-105" 
         />
       </div>
 
       <div className="container mx-auto px-4 lg:px-8 relative z-20">
         <div className="max-w-4xl">
-          {/* Badge */}
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-2xl bg-white/10 backdrop-blur-md border border-white/10 text-white text-[10px] font-black uppercase tracking-[0.2em] mb-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
             <div className="w-2 h-2 bg-[#CC0000] rounded-full animate-pulse" />
             Phụ tùng Honda chính hãng
