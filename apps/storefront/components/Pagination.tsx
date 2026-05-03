@@ -1,19 +1,29 @@
 import Link from 'next/link';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
-interface PartsPaginationProps {
+interface PaginationProps {
   currentPage: number;
   totalPages: number;
   searchParams: any;
+  baseUrl: string;
 }
 
-export default function PartsPagination({ currentPage, totalPages, searchParams }: PartsPaginationProps) {
+export default function Pagination({ currentPage, totalPages, searchParams, baseUrl }: PaginationProps) {
   if (totalPages <= 1) return null;
+
+  const createPageUrl = (page: number) => {
+    const params = new URLSearchParams();
+    Object.entries(searchParams).forEach(([key, value]) => {
+      if (value && key !== 'page') params.append(key, value as string);
+    });
+    params.append('page', page.toString());
+    return `${baseUrl}?${params.toString()}`;
+  };
 
   return (
     <div className="flex justify-center items-center gap-4">
       <PaginationLink 
-        href={currentPage > 1 ? `/parts?${new URLSearchParams({ ...searchParams, page: (currentPage - 1).toString() })}` : '#'}
+        href={currentPage > 1 ? createPageUrl(currentPage - 1) : '#'}
         disabled={currentPage === 1}
         icon={<ChevronLeft size={20} />}
       />
@@ -25,7 +35,7 @@ export default function PartsPagination({ currentPage, totalPages, searchParams 
           ) : (
             <Link
               key={`page-${item}`}
-              href={`/parts?${new URLSearchParams({ ...searchParams, page: item.toString() })}`}
+              href={createPageUrl(item as number)}
               className={`
                 w-12 h-12 rounded-2xl flex items-center justify-center text-xs font-black transition-all
                 ${currentPage === item 
@@ -41,7 +51,7 @@ export default function PartsPagination({ currentPage, totalPages, searchParams 
       </div>
 
       <PaginationLink 
-        href={currentPage < totalPages ? `/parts?${new URLSearchParams({ ...searchParams, page: (currentPage + 1).toString() })}` : '#'}
+        href={currentPage < totalPages ? createPageUrl(currentPage + 1) : '#'}
         disabled={currentPage === totalPages}
         icon={<ChevronRight size={20} />}
       />

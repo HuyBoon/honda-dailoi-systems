@@ -22,7 +22,9 @@ export interface Part {
 
 export const partApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    getParts: builder.query<{ items: Part[]; total: number; page: number; totalPages: number }, { categoryId?: string; q?: string; page?: number; limit?: number }>({
+    getParts: builder.query<{
+      filter(arg0: (p: any) => boolean): any; items: Part[]; total: number; page: number; totalPages: number 
+}, { categoryId?: string; q?: string; page?: number; limit?: number }>({
       query: (params) => ({
         url: '/parts',
         params,

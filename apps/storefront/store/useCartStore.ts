@@ -16,7 +16,7 @@ interface CartStore {
   items: CartItem[];
   isOpen: boolean;
   lastSyncedUserId: string | null;
-  addItem: (item: Omit<CartItem, 'quantity'>) => Promise<void>;
+  addItem: (item: Omit<CartItem, 'quantity'>, quantity?: number) => Promise<void>;
   removeItem: (id: string) => Promise<void>;
   updateQuantity: (id: string, quantity: number) => Promise<void>;
   clearCart: () => Promise<void>;
@@ -34,13 +34,13 @@ export const useCartStore = create<CartStore>()(
       isOpen: false,
       lastSyncedUserId: null,
       
-      addItem: async (item) => {
+      addItem: async (item, quantity = 1) => {
         const { token } = useAuthStore.getState();
         const existingItem = get().items.find((i) => i.id === item.id);
         
         if (token) {
           try {
-            await addToCart(token, item.id, 1);
+            await addToCart(token, item.id, quantity);
           } catch (err) {
             console.error('Sync failed:', err);
           }
@@ -49,13 +49,13 @@ export const useCartStore = create<CartStore>()(
         if (existingItem) {
           set((state) => ({
             items: state.items.map((i) => 
-              i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i
+              i.id === item.id ? { ...i, quantity: i.quantity + quantity } : i
             ),
             isOpen: true,
           }));
         } else {
           set((state) => ({ 
-            items: [...state.items, { ...item, quantity: 1 }], 
+            items: [...state.items, { ...item, quantity }], 
             isOpen: true 
           }));
         }

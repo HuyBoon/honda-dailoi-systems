@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import CartSidebar from '../components/CartSidebar';
+import ScrollToTop from '../components/ScrollToTop';
 import "./globals.css";
 
 const inter = Inter({ subsets: ['latin'] });
@@ -25,7 +26,8 @@ export default function RootLayout({
         <Toaster position="top-right" />      
         <Navbar />
         <CartSidebar />     
-        <main className="min-h-screen pt-28">
+        <ScrollToTop />
+        <main className="min-h-screen pt-[77px] lg:pt-28 ">
           {children}
         </main>       
         <Footer />

@@ -3,7 +3,7 @@ import PartCard from '@/components/PartCard';
 import PageHeader from '@/components/PageHeader';
 import PartsSidebar from '@/components/Parts/PartsSidebar';
 import PartsToolbar from '@/components/Parts/PartsToolbar';
-import PartsPagination from '@/components/Parts/PartsPagination';
+import Pagination from '@/components/Pagination';
 import { Search } from 'lucide-react';
 import Link from 'next/link';
 
@@ -80,10 +80,11 @@ export default async function PartsPage(props: {
                 </div>
 
                 {/* Pagination */}
-                <PartsPagination 
+                <Pagination 
                   currentPage={currentPage}
                   totalPages={partsData.totalPages}
                   searchParams={searchParams}
+                  baseUrl="/parts"
                 />
               </div>
             )}

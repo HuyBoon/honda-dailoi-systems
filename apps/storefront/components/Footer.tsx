@@ -25,7 +25,7 @@ export default function Footer() {
           <div className="lg:col-span-4 space-y-6">
             <div className="flex items-center gap-4">
               <div className="w-14 h-14 bg-white rounded-xl p-1.5 flex items-center justify-center shadow-lg shadow-[#cc0000]/10">
-                <img src="/logo.png" alt="Honda Đại Lợi" className="w-full h-full object-contain" />
+                <img src="/logo-dailoi.png" alt="Honda Đại Lợi" className="w-full h-full object-contain" />
               </div>
               <div className="flex flex-col">
                 <h3 className="text-xl font-black tracking-wider text-white uppercase">Đại Lợi</h3>

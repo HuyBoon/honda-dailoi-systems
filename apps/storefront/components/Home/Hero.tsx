@@ -1,79 +1,153 @@
-import { ArrowRight, ShieldCheck, Sparkles, Zap, ChevronRight } from 'lucide-react';
+'use client';
+
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Autoplay, Navigation, Pagination, EffectFade } from 'swiper/modules';
+
+// Import Swiper styles
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
+import 'swiper/css/effect-fade';
+
+const BANNERS = [
+  {
+    id: 1,
+    title: 'Trải nghiệm',
+    subtitle: 'Sự Khác Biệt.',
+    tagline: 'Hệ thống phụ tùng chính hãng',
+    image: '/heros.png',
+    link: '/parts',
+    cta: 'VIEW MORE'
+  },
+  {
+    id: 2,
+    title: 'Dịch vụ',
+    subtitle: 'Chuyên Nghiệp.',
+    tagline: 'Bảo trì & Sửa chữa tiêu chuẩn Honda',
+    image: '/hero_service.png',
+    link: '/about',
+    cta: 'KHÁM PHÁ NGAY'
+  },
+  {
+    id: 3,
+    title: 'Thế giới',
+    subtitle: 'Xe Honda.',
+    tagline: 'Đa dạng dòng xe, ngập tràn ưu đãi',
+    image: '/hero_showroom.png',
+    link: '/vehicles',
+    cta: 'TÌM HIỂU THÊM'
+  }
+];
 
 export default function Hero() {
   return (
-    <section className="relative min-h-screen flex items-center pt-20 overflow-hidden bg-black">
-      <div className="absolute inset-0 z-0">
-        <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/40 to-black z-10" />
-        {/* <div className="absolute inset-0 bg-gradient-to-r from-black via-black/20 to-transparent z-10" /> */}
-        <div 
-          className="w-full h-full bg-[url('/heros.png')] bg-cover bg-center transition-transform duration-[10s] hover:scale-110 scale-105" 
-        />
+    <section className="relative h-screen overflow-hidden bg-black">
+      <Swiper
+        modules={[Autoplay, Navigation, Pagination, EffectFade]}
+        effect="fade"
+        speed={1000}
+        autoplay={{ delay: 6000, disableOnInteraction: false }}
+        navigation={{
+          prevEl: '.hero-prev',
+          nextEl: '.hero-next',
+        }}
+        pagination={{
+          clickable: true,
+          el: '.hero-pagination',
+        }}
+        loop={true}
+        className="h-full w-full"
+      >
+        {BANNERS.map((banner) => (
+          <SwiperSlide key={banner.id}>
+            <div className="relative h-full w-full flex items-center justify-center">
+              {/* Background Image with Overlay */}
+              <div className="absolute inset-0 z-0">
+                <div className="absolute inset-0 bg-black/40 z-10" />
+                <div 
+                  className="w-full h-full bg-cover bg-center scale-105" 
+                  style={{ backgroundImage: `url(${banner.image})` }}
+                />
+              </div>
+
+              {/* Centered Content */}
+              <div className="container mx-auto px-6 relative z-20 text-center">
+                <div className="max-w-4xl mx-auto space-y-6">
+                  <motion.p 
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8 }}
+                    viewport={{ once: true }}
+                    className="text-white text-base lg:text-xl font-black uppercase tracking-[0.2em]"
+                  >
+                    {banner.tagline}
+                  </motion.p>
+                  
+                  <motion.h1 
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, delay: 0.2 }}
+                    viewport={{ once: true }}
+                    className="text-5xl lg:text-[6vw] font-black text-white tracking-tight leading-tight uppercase"
+                  >
+                    {banner.title} <br />
+                    <span className="text-[#CC0000]">{banner.subtitle}</span>
+                  </motion.h1>
+                  
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, delay: 0.4 }}
+                    viewport={{ once: true }}
+                    className="pt-8"
+                  >
+                    <Link 
+                      href={banner.link}
+                      className="inline-flex h-14 px-12 bg-[#CC0000] text-white font-black text-xs uppercase tracking-[0.2em] transition-all hover:bg-red-700 hover:scale-105 active:scale-95 shadow-2xl shadow-red-500/30 items-center justify-center"
+                    >
+                      {banner.cta}
+                    </Link>
+                  </motion.div>
+                </div>
+              </div>
+            </div>
+          </SwiperSlide>
+        ))}
+
+        {/* Cập nhật Pagination: Trải dài full width và căn giữa flex */}
+        <div className="hero-pagination absolute bottom-10 left-0 w-full z-30 flex justify-center items-center gap-3" />
+      </Swiper>
+
+      {/* Navigation Arrows */}
+      <div className="absolute inset-x-4 lg:inset-x-12 top-1/2 -translate-y-1/2 flex justify-between items-center z-30 pointer-events-none">
+        <button className="hero-prev w-12 h-12 md:w-14 md:h-14 rounded-full bg-white/10 hover:bg-white text-white hover:text-black backdrop-blur-md flex items-center justify-center transition-all pointer-events-auto group">
+          <ChevronLeft size={24} className="group-hover:-translate-x-1 transition-transform" />
+        </button>
+        <button className="hero-next w-12 h-12 md:w-14 md:h-14 rounded-full bg-white/10 hover:bg-white text-white hover:text-black backdrop-blur-md flex items-center justify-center transition-all pointer-events-auto group">
+          <ChevronRight size={24} className="group-hover:translate-x-1 transition-transform" />
+        </button>
       </div>
 
-      <div className="container mx-auto px-4 lg:px-8 relative z-20">
-        <div className="max-w-4xl">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-2xl bg-white/10 backdrop-blur-md border border-white/10 text-white text-[10px] font-black uppercase tracking-[0.2em] mb-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-            <div className="w-2 h-2 bg-[#CC0000] rounded-full animate-pulse" />
-            Phụ tùng Honda chính hãng
-          </div>
-          
-          <h1 className="text-[12vw] lg:text-[7vw] font-black text-white tracking-tighter leading-[0.85] mb-8 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-100">
-            ENGINEERED <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#CC0000] to-red-500">FOR PERFORMANCE.</span>
-          </h1>
-          
-          <p className="text-lg lg:text-xl text-gray-400 max-w-xl font-medium leading-relaxed mb-12 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200">
-            Trải nghiệm sự khác biệt từ những chi tiết nhỏ nhất. Hệ thống phụ tùng chính hãng được tinh chỉnh tối ưu cho mọi dòng xe Honda.
-          </p>
-
-          <div className="flex flex-col sm:flex-row gap-4 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-300">
-            <Link 
-              href="/parts"
-              className="h-16 px-10 bg-[#CC0000] text-white rounded-2xl font-black text-xs uppercase tracking-widest flex items-center justify-center gap-3 hover:bg-red-700 hover:scale-105 active:scale-95 transition-all shadow-2xl shadow-red-500/20"
-            >
-              KHÁM PHÁ NGAY <ArrowRight size={18} />
-            </Link>
-            <Link 
-              href="/vehicles"
-              className="h-16 px-10 bg-white/10 backdrop-blur-xl text-white border border-white/10 rounded-2xl font-black text-xs uppercase tracking-widest flex items-center justify-center gap-3 hover:bg-white hover:text-black transition-all"
-            >
-              TÌM THEO DÒNG XE <ChevronRight size={18} />
-            </Link>
-          </div>
-        </div>
-      </div>
-
-      {/* Floating Decorative Stats */}
-      <div className="absolute right-8 bottom-32 hidden xl:flex flex-col gap-4 z-20">
-        <StatCard icon={Zap} label="GIAO HÀNG" value="SIÊU TỐC" delay="delay-500" />
-        <StatCard icon={ShieldCheck} label="BẢO HÀNH" value="12 THÁNG" delay="delay-700" />
-        <StatCard icon={Sparkles} label="CHẤT LƯỢNG" value="PREMIUM" delay="delay-1000" />
-      </div>
-
-      {/* Scroll Indicator */}
-      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4 opacity-50">
-        <div className="w-px h-16 bg-gradient-to-b from-transparent via-white to-transparent" />
-        <span className="text-[10px] font-black text-white uppercase tracking-[0.3em]">SCROLL</span>
-      </div>
+      <style jsx global>{`
+        /* Sửa lại để ghi đè chuẩn hơn trên Swiper */
+        .hero-pagination .swiper-pagination-bullet {
+          width: 12px;
+          height: 12px;
+          background: rgba(255, 255, 255, 0.4);
+          opacity: 1;
+          margin: 0 !important;
+          transition: all 0.3s ease;
+          border-radius: 6px;
+          cursor: pointer;
+        }
+        .hero-pagination .swiper-pagination-bullet-active {
+          width: 40px;
+          background: #CC0000;
+        }
+      `}</style>
     </section>
-  );
-}
-
-function StatCard({ icon: Icon, label, value, delay }: any) {
-  return (
-    <div className={`glass-dark p-6 rounded-[2rem] border border-white/5 min-w-[200px] transform hover:-translate-x-4 transition-transform duration-500 animate-in fade-in slide-in-from-right-8 ${delay}`}>
-      <div className="flex items-center gap-4">
-        <div className="w-10 h-10 bg-[#CC0000] rounded-xl flex items-center justify-center shadow-lg shadow-red-500/20">
-          <Icon size={20} className="text-white" />
-        </div>
-        <div>
-          <p className="text-[9px] font-black text-gray-500 uppercase tracking-widest">{label}</p>
-          <p className="text-sm font-black text-white">{value}</p>
-        </div>
-      </div>
-    </div>
   );
 }
