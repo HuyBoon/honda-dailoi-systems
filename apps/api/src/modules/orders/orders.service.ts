@@ -12,82 +12,100 @@ export class OrdersService {
   async create(createOrderDto: CreateOrderDto, userId?: string) {
     const { items, customerId, customerName, customerPhone, ...orderData } = createOrderDto;
 
-    return this.prisma.$transaction(async (tx) => {
-      let finalCustomerId = customerId;
+    // 0. Pre-validate parts exist to give better error messages
+    const partIds = items.map(item => item.partId);
+    const existingParts = await this.prisma.part.findMany({
+      where: { id: { in: partIds } },
+      select: { id: true }
+    });
 
-      // 1. Handle Customer (Find or Create)
-      if (!finalCustomerId && customerPhone && customerName) {
-        const existingCustomer = await tx.customer.findUnique({
-          where: { phone: customerPhone },
+    if (existingParts.length !== partIds.length) {
+      const existingIds = existingParts.map(p => p.id);
+      const missingIds = partIds.filter(id => !existingIds.includes(id));
+      throw new BadRequestException(`Một số sản phẩm không tồn tại hoặc đã bị xóa: ${missingIds.join(', ')}. Vui lòng làm mới giỏ hàng.`);
+    }
+
+    return this.prisma.$transaction(async (tx) => {
+      try {
+        let finalCustomerId = customerId;
+
+        // 1. Handle Customer (Find or Create)
+        if (!finalCustomerId && customerPhone && customerName) {
+          const existingCustomer = await tx.customer.findUnique({
+            where: { phone: customerPhone },
+          });
+
+          if (existingCustomer) {
+            finalCustomerId = existingCustomer.id;
+            // Optionally update address if it's provided and different
+            if (createOrderDto.address && existingCustomer.address !== createOrderDto.address) {
+              await tx.customer.update({
+                where: { id: existingCustomer.id },
+                data: { address: createOrderDto.address },
+              });
+            }
+          } else {
+            const newCustomer = await tx.customer.create({
+              data: {
+                name: customerName,
+                phone: customerPhone,
+                address: createOrderDto.address,
+              },
+            });
+            finalCustomerId = newCustomer.id;
+          }
+        }
+
+        // 2. Generate Order Number (HD-YYYYMMDD-XXXX)
+        const date = new Date();
+        const dateStr = date.toISOString().slice(0, 10).replace(/-/g, '');
+        const count = await tx.order.count({
+          where: {
+            createdAt: {
+              gte: new Date(new Date().setHours(0, 0, 0, 0)),
+              lte: new Date(new Date().setHours(23, 59, 59, 999)),
+            },
+          },
+        });
+        const orderNumber = `HD-${dateStr}-${(count + 1).toString().padStart(4, '0')}`;
+
+        // 3. Create Order
+        const totalAmount = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+        const order = await tx.order.create({
+          data: {
+            orderNumber,
+            totalAmount,
+            notes: orderData.notes,
+            status: OrderStatus.PENDING,
+            paymentMethod: orderData.paymentMethod || 'COD',
+            paymentStatus: orderData.paymentStatus || 'PENDING',
+            ...(userId ? { staff: { connect: { id: userId } } } : {}),
+            ...(finalCustomerId ? { customer: { connect: { id: finalCustomerId } } } : {}),
+            items: {
+              create: items.map((item) => ({
+                partId: item.partId,
+                quantity: item.quantity,
+                price: item.price,
+              })),
+            },
+          } as any,
+          include: {
+            items: {
+              include: { part: true },
+            },
+            customer: true,
+            staff: {
+              select: { email: true, id: true },
+            },
+          },
         });
 
-        if (existingCustomer) {
-          finalCustomerId = existingCustomer.id;
-          // Optionally update address if it's provided and different
-          if (createOrderDto.address && existingCustomer.address !== createOrderDto.address) {
-            await tx.customer.update({
-              where: { id: existingCustomer.id },
-              data: { address: createOrderDto.address },
-            });
-          }
-        } else {
-          const newCustomer = await tx.customer.create({
-            data: {
-              name: customerName,
-              phone: customerPhone,
-              address: createOrderDto.address,
-            },
-          });
-          finalCustomerId = newCustomer.id;
-        }
+        return order;
+      } catch (error) {
+        console.error('TRANSACTION ERROR in OrdersService.create:', error);
+        throw error;
       }
-
-      // 2. Generate Order Number (HD-YYYYMMDD-XXXX)
-      const date = new Date();
-      const dateStr = date.toISOString().slice(0, 10).replace(/-/g, '');
-      const count = await tx.order.count({
-        where: {
-          createdAt: {
-            gte: new Date(date.setHours(0, 0, 0, 0)),
-            lte: new Date(date.setHours(23, 59, 59, 999)),
-          },
-        },
-      });
-      const orderNumber = `HD-${dateStr}-${(count + 1).toString().padStart(4, '0')}`;
-
-      // 3. Create Order
-      const totalAmount = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-
-      const order = await tx.order.create({
-        data: {
-          orderNumber,
-          totalAmount,
-          notes: orderData.notes,
-          status: OrderStatus.PENDING,
-          paymentMethod: orderData.paymentMethod || 'COD',
-          paymentStatus: orderData.paymentStatus || 'PENDING',
-          ...(userId ? { staff: { connect: { id: userId } } } : {}),
-          ...(finalCustomerId ? { customer: { connect: { id: finalCustomerId } } } : {}),
-          items: {
-            create: items.map((item) => ({
-              partId: item.partId,
-              quantity: item.quantity,
-              price: item.price,
-            })),
-          },
-        } as any,
-        include: {
-          items: {
-            include: { part: true },
-          },
-          customer: true,
-          staff: {
-            select: { email: true, id: true },
-          },
-        },
-      });
-
-      return order;
     });
   }
 

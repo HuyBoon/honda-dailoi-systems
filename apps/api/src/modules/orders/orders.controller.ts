@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, UseGuards, Query, Request } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, UseGuards, Query, Request, BadRequestException } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
@@ -15,9 +15,19 @@ export class OrdersController {
   @UseGuards(OptionalJwtAuthGuard)
   @Post()
   @ApiOperation({ summary: 'Create a new order (Public for Storefront)' })
-  create(@Body() createOrderDto: CreateOrderDto, @CurrentUser() user: any) {
-    // If user exists, pass their ID. Otherwise pass null for guest order.
-    return this.ordersService.create(createOrderDto, user?.id || null);
+  async create(@Body() createOrderDto: CreateOrderDto, @CurrentUser() user: any) {
+    try {
+      // If user exists, pass their ID. Otherwise pass null for guest order.
+      const result = await this.ordersService.create(createOrderDto, user?.id || null);
+      return result;
+    } catch (error) {
+      console.error('Controller Error creating order:', error);
+      // Return a proper JSON error even for non-HttpExceptions
+      if (error instanceof Error) {
+        throw new BadRequestException(error.message);
+      }
+      throw error;
+    }
   }
 
   @UseGuards(JwtAuthGuard)

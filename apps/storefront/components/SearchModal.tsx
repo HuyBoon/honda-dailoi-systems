@@ -61,7 +61,7 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
         const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
         const res = await fetch(`${API_URL}/parts?q=${encodeURIComponent(query)}`);
         const data = await res.json();
-        setResults(data.slice(0, 5)); // Show top 5 results
+        setResults((data.items || []).slice(0, 5)); // Show top 5 results
       } catch (err) {
         console.error('Search error:', err);
       } finally {

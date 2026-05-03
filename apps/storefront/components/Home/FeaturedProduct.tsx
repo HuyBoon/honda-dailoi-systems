@@ -11,7 +11,7 @@ export default function FeaturedProduct() {
   const [isAdded, setIsAdded] = useState(false);
 
   const product = {
-    id: '4b26e2fb-b471-414a-889e-a6f81a61a918',
+    id: 'd753fb92-11ae-4b68-a8d6-70d6c7af99db',
     name: 'Bugi NGK Laser Iridium',
     price: 250000,
     partNumber: 'NGK-IZFR6K-11NS',
